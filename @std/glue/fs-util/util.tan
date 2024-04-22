@@ -1,0 +1,20 @@
+; Ensures the parent directory exists, returns the input for convenience.
+(let ensure-dirname (Func [path]
+    (let dirname (path/get-dirname path))
+    (fs/create-directory dirname)
+    path
+))
+
+; #todo add support for materializing symbolic links
+; Copies a file. The function is resilient:
+; - ensures the target-path directory exists.
+(let copy-file (Func [source-path target-path]
+    ; #todo properly report errors!
+    (fs/copy source-path (ensure-dirname target-path))
+))
+
+; Recursively Copies a directory. The function is resilient:
+; - ensures the target-path directory exists.
+(let copy-directory (Func [source-path target-path]
+    ; #todo
+))

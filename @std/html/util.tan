@@ -1,0 +1,4 @@
+; #insight a dummy function to test merging of foreign and native modules.
+(let html-zonk (Func [input]
+    "works lamer: ${input}"
+))

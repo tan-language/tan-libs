@@ -1,0 +1,19 @@
+; Change and Difference functions.
+; https://en.wikipedia.org/wiki/Relative_change_and_difference
+
+; #todo make generic over Num/Numeric.
+
+; #todo is this method really needed?
+; #todo consider renaming to diff?
+(let difference (Func [x y]
+    (- x y)
+))
+
+; When there is no reference value, the sign of Δ has little meaning in the
+; comparison of the two values since it doesn't matter which of the two values
+; is written first, so one often works with |Δ| = |x − y|, the absolute
+; difference instead of Δ.
+(let absolute-difference (Func [x y]
+    ; #todo implement abs
+    (abs (- x y))
+))

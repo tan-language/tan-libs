@@ -1,0 +1,18 @@
+; #todo fold
+; #todo reduce
+; #todo map
+; #todo flat-map (order makes sense in Tan ;-))
+; #todo what else?
+
+; #todo how to add this to the prelude?
+; #todo this implementation sucks.
+; Filters an interable.
+(let filter (Func [xs predicate-fn]
+    (let filtered [])
+    (for [x xs]
+        (if (predicate-fn x)
+            (push filtered x)
+        )
+    )
+    filtered
+))

@@ -1,0 +1,4 @@
+; #not-used
+(let is-empty? (Func [seq]
+    (= 0 (count seq))
+))

@@ -1,0 +1,7 @@
+# Shell utilities
+
+## Todo
+
+- consider renaming to shell-util
+  - is this similar to Python's shutil?
+    - yes: https://docs.python.org/3/library/shutil.html
