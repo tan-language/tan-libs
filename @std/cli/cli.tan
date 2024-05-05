@@ -1,6 +1,0 @@
-; use data from project manifest to setup the CLI (program name, version, author, etc.)
-; actually the project manifest could detail the options, describe the CLI.
-
-(let CLI (Func [options]
-    options
-))
