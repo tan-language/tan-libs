@@ -1,0 +1,12 @@
+[package]
+name = "lib-cmark"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "tancmark"
+crate-type = ["dylib"]
+
+[dependencies]
+tan.workspace = true
+comrak = { version = "0.23", default-features = false }
