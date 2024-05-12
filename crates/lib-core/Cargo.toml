@@ -1,7 +1,10 @@
 [package]
-name = "foreign-core"
+name = "lib-core"
 version = "0.1.0"
 edition = "2021"
+
+[lib]
+name = "tancore"
 
 [dependencies]
 tan.workspace = true
