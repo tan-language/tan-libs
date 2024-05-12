@@ -1,0 +1,8 @@
+[package]
+name = "foreign-core"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tan.workspace = true
+uuid = { version = "1.7", features = ["v4"] }

@@ -7,3 +7,6 @@ edition = "2021"
 crate-type = ["dylib"]
 
 [dependencies]
+rand = "0.8"
+# #todo depend on more lightweight tan-api
+tan = { path = "../../../tan", version = "0.14" }

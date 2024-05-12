@@ -3,3 +3,6 @@
 resolver = "2"
 
 members = ["crates/*"]
+
+[workspace.dependencies]
+tan = { path = "../tan", version = "0.14" }
