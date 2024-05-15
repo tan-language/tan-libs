@@ -4,4 +4,8 @@ A comprehensive library of functions and types.
 
 ## Setup
 
-#todo move dynamic libraries to a Tan 'well-known' directory.
+Move dynamic libraries to a Tan 'well-known' directory:
+
+```sh
+./install
+```
