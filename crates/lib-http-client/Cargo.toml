@@ -1,0 +1,13 @@
+[package]
+name = "lib-http-client"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "tanhttpclient"
+crate-type = ["dylib"]
+
+[dependencies]
+tan.workspace = true
+# todo use the non-blocking version, now we include tokio!
+reqwest = { version = "0.12", features = ["blocking"] }
