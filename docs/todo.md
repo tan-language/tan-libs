@@ -1,5 +1,9 @@
 # Todo
 
+- consider renaming the workspace:
+  - tan-library-impl
+  - tan-library-foreign
+  - tan-dyn-libs <--
 - remove the `lib-` prefix from crates.
 - find better coding convention instead of foreign-core
 
