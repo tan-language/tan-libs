@@ -1,6 +1,6 @@
-# Tan Standard Library
+# Tan Dynamic Libs
 
-A comprehensive library of functions and types.
+A collection of Rust dynamic libraries that support several Tan Library modules.
 
 ## Setup
 
