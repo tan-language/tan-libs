@@ -3,7 +3,15 @@
 // network/http/ws
 // network/smtp
 
+// #todo no need for the `network/prefix`?
+// #todo use `net` instead of `network`?
+
+// #todo use non-blocking io.
+// #todo add support for streaming responses!
+
 // #todo separate server/client?
+
+// #todo should introduce a `client` 'object'.
 
 // #insight network/http is better than protocol/http, more specific.
 // #insight use https://httpbin.org/ for testing.
@@ -17,7 +25,7 @@
 
 // #todo implement general http/fetch.
 
-use std::{collections::HashMap, str::FromStr, sync::Arc};
+use std::{collections::HashMap, str::FromStr, sync::Arc, time::Duration};
 
 use reqwest::header::{HeaderMap, HeaderName, HeaderValue};
 use tan::{context::Context, error::Error, expr::Expr, util::module_util::require_module};
@@ -59,6 +67,7 @@ fn build_tan_response(resp: reqwest::Result<reqwest::blocking::Response>) -> Res
         // #todo should return Error::Io, ideally wrap the lower-level error.
         // #todo return a better error.
         // #todo more descriptive error needed here.
+        println!(">>> {resp:?}");
         return Err(Error::general("failed http request"));
     };
 
@@ -110,6 +119,7 @@ pub fn http_get(args: &[Expr], _context: &mut Context) -> Result<Expr, Error> {
 // #todo support non-string bodies.
 pub fn http_post(args: &[Expr], _context: &mut Context) -> Result<Expr, Error> {
     // #insight `_` does not work in the pattern.
+    // #insight header are extacted later in the function.
     let [url, body, ..] = args else {
         return Err(Error::invalid_arguments(
             "`post` requires `url` and `body` argument",
@@ -141,7 +151,12 @@ pub fn http_post(args: &[Expr], _context: &mut Context) -> Result<Expr, Error> {
     // #todo support streaming.
     // #todo use async
 
-    let client = reqwest::blocking::Client::new();
+    // let client = reqwest::blocking::Client::new();
+    // #todo #temp hack to workaround a timeout issue, we need a more robust solution.
+    let client = reqwest::blocking::Client::builder()
+        .timeout(Duration::from_secs(3 * 60))
+        .build()
+        .unwrap();
 
     let mut req = client.post(url);
 
