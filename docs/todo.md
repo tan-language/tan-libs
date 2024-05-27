@@ -2,6 +2,8 @@
 
 - remove the `lib-` prefix from crates.
 - find better coding convention instead of foreign-core
+- lib-js-compiler (transpiler)
+- lib-rust-compiler (transpiler)
 
 ### Done
 
