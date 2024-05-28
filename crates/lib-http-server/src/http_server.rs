@@ -12,7 +12,7 @@ use tan::{
     error::Error,
     eval::invoke_func,
     expr::{annotate_type, Expr},
-    util::module_util::require_module,
+    util::{args::unpack_stringable_arg, module_util::require_module},
 };
 
 static DEFAULT_ADDRESS: &str = "127.0.0.1";
@@ -49,6 +49,8 @@ async fn run_server(options: HashMap<String, Expr>, handler: Expr, context: &mut
         // #todo handle POST body parsing.
         // #todo what else to pass to tan_req? (headers, method, ...)
 
+        // Encode Tan Request.
+
         let mut map = HashMap::new();
 
         map.insert("uri".to_string(), Expr::string(axum_req.uri().to_string()));
@@ -64,8 +66,9 @@ async fn run_server(options: HashMap<String, Expr>, handler: Expr, context: &mut
 
         let method = axum_req.method().to_string();
 
-        // #todo remove the to_lowercase.
-        if method.to_lowercase() == "post" {
+        if method == "POST" {
+            // #todo consider automatically decoding on :method POST, :content-type "application/x-www-form-urlencoded" -> better NO!
+
             // #todo think about the body limit here!
             let Ok(bytes) = to_bytes(axum_req.into_body(), usize::MAX).await else {
                 return internal_server_error_response("invalid request body");
@@ -86,82 +89,84 @@ async fn run_server(options: HashMap<String, Expr>, handler: Expr, context: &mut
         let req = annotate_type(Expr::map(map), "http/Request");
 
         // #todo handle conversion of more return types.
-        if let Ok(value) = invoke_func(&handler, vec![req], &mut context) {
-            // #todo the handler should return a tuple (status, headers, body)
-            // #todo add tan-side helpers to generate this tuple!
-            // #todo set content type depending on output.
-            // #todo currently we use an array for the tuple.
+        let result = invoke_func(&handler, vec![req], &mut context);
 
-            // #insight elaborate handling of the value to avoid excessive cloning.
+        match result {
+            Ok(value) => {
+                // Decode Tan Response.
 
-            let Some(rwlock) = value.as_array_consuming() else {
-                return internal_server_error_response("invalid response");
-            };
+                // #todo the handler should return a tuple (status, headers, body)
+                // #todo add tan-side helpers to generate this tuple!
+                // #todo set content type depending on output.
+                // #todo currently we use an array for the tuple.
 
-            // #ai
-            // #insight hack to take ownership of the Arc<RwLock> inner value.
-            let dummy = Vec::new();
-            let tuple = {
-                let mut write_guard = rwlock.write().unwrap();
-                std::mem::replace(&mut *write_guard, dummy)
-            };
+                // #insight elaborate handling of the value to avoid excessive cloning.
 
-            let mut tuple = tuple.into_iter();
-
-            // (status-code, headers, body)
-
-            let Some(status_code) = tuple.next() else {
-                return internal_server_error_response("missing status-code");
-            };
-
-            let Some(status_code) = status_code.as_int() else {
-                return internal_server_error_response("invalid status-code");
-            };
-
-            let Ok(status_code) = StatusCode::from_u16(status_code as u16) else {
-                return internal_server_error_response("invalid status-code");
-            };
-
-            let Some(headers) = tuple.next() else {
-                return internal_server_error_response("missing headers");
-            };
-
-            let Some(headers) = headers.as_map() else {
-                return internal_server_error_response("invalid headers");
-            };
-
-            // #todo body can be optional, e.g. redirect response.
-            // #todo support a Stream.
-            let Some(body) = tuple.next() else {
-                return internal_server_error_response("missing body");
-            };
-
-            let Some(body) = body.as_stringable_consuming() else {
-                return internal_server_error_response("invalid body");
-            };
-
-            let mut header_map = HeaderMap::new();
-            for (name, value) in headers.iter() {
-                let Some(value) = value.as_stringable() else {
-                    return internal_server_error_response(&format!("invalid header `{name}`"));
+                let Some(rwlock) = value.as_array_consuming() else {
+                    return internal_server_error_response("invalid response");
                 };
-                let Ok(name) = HeaderName::try_from(name) else {
-                    return internal_server_error_response(&format!("invalid header `{name}`"));
+
+                // #ai
+                // #insight hack to take ownership of the Arc<RwLock> inner value.
+                let dummy = Vec::new();
+                let tuple = {
+                    let mut write_guard = rwlock.write().unwrap();
+                    std::mem::replace(&mut *write_guard, dummy)
                 };
-                header_map.insert(name, value.parse().unwrap());
+
+                let mut tuple = tuple.into_iter();
+
+                // (status-code, headers, body)
+
+                let Some(status_code) = tuple.next() else {
+                    return internal_server_error_response("missing status-code");
+                };
+
+                let Some(status_code) = status_code.as_int() else {
+                    return internal_server_error_response("invalid status-code");
+                };
+
+                let Ok(status_code) = StatusCode::from_u16(status_code as u16) else {
+                    return internal_server_error_response("invalid status-code");
+                };
+
+                let Some(headers) = tuple.next() else {
+                    return internal_server_error_response("missing headers");
+                };
+
+                let Some(headers) = headers.as_map() else {
+                    return internal_server_error_response("invalid headers");
+                };
+
+                let mut header_map = HeaderMap::new();
+                for (name, value) in headers.iter() {
+                    let Some(value) = value.as_stringable() else {
+                        return internal_server_error_response(&format!("invalid header `{name}`"));
+                    };
+                    let Ok(name) = HeaderName::try_from(name) else {
+                        return internal_server_error_response(&format!("invalid header `{name}`"));
+                    };
+                    header_map.insert(name, value.parse().unwrap());
+                }
+
+                // #todo body can be optional, e.g. redirect response.
+                // #todo support a Stream.
+                let Some(body) = tuple.next() else {
+                    return internal_server_error_response("missing body");
+                };
+
+                let Some(body) = body.as_stringable_consuming() else {
+                    return internal_server_error_response("invalid body");
+                };
+
+                (status_code, header_map, body)
             }
-
-            return (status_code, header_map, body);
+            Err(error) => {
+                // #todo report that the handler returned non-stringable response.
+                // #todo should also log/trace or println?
+                internal_server_error_response(&error.to_string())
+            }
         }
-
-        //     return (
-        //         StatusCode::FOUND,
-        //         [(header::CONTENT_TYPE, "text/html")],
-        //         value.to_string(),
-        //     );
-        // }
-        // #todo report that the handler returned non-stringable response.
-        internal_server_error_response("unknown")
     };
 
     let address = if options.contains_key("address") {
@@ -231,7 +236,26 @@ pub fn http_serve(args: &[Expr], context: &mut Context) -> Result<Expr, Error> {
     Ok(Expr::Never)
 }
 
+// #todo what is a good name?
+// #todo consider automatically decoding on :method POST, :content-type "application/x-www-form-urlencoded"
+// #insight better don't decode automatically, avoid unnecessary magic.
+pub fn read_form_urlencoded(args: &[Expr], _context: &mut Context) -> Result<Expr, Error> {
+    let body = unpack_stringable_arg(args, 0, "body")?;
+    let data: HashMap<_, _> = url::form_urlencoded::parse(body.as_bytes())
+        .into_owned()
+        .map(|(k, v)| (k, Expr::string(v)))
+        .collect();
+    Ok(Expr::map(data))
+}
+
 pub fn import_lib_http_server(context: &mut Context) {
     let module = require_module("network/http/server", context);
     module.insert("serve", Expr::ForeignFunc(Arc::new(http_serve)));
+    // #todo move to another namespace.
+    // #todo what would be a good name?
+    // #insight form-urlencoded is more accurate and actually different than urlencoded.
+    module.insert(
+        "read-form-urlencoded",
+        Expr::ForeignFunc(Arc::new(read_form_urlencoded)),
+    );
 }

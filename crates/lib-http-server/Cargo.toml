@@ -12,3 +12,4 @@ tan.workspace = true
 # todo is there a way to reuse tokio from tan?
 tokio = { version = "1.0", features = ["full"] }
 axum = { version = "0.7" }
+url = { version = "2.5" }
