@@ -1,6 +1,7 @@
 use std::{collections::HashMap, sync::Arc};
 
 use axum::{
+    body::to_bytes,
     extract::Request,
     handler::HandlerWithoutStateExt,
     http::{header, HeaderMap, HeaderName, StatusCode},
@@ -22,6 +23,9 @@ static DEFAULT_PORT: i64 = 8000; // #todo what should be the default port?
 // #todo support post method and body!
 // #todo support redirects.
 
+// #todo have option to server static files
+// #todo have option to act as reverse proxy to the tan service.
+
 // #todo find a better name.
 // #todo use something from Axum.
 pub type HandlerResponse = (StatusCode, HeaderMap, String);
@@ -41,9 +45,43 @@ async fn run_server(options: HashMap<String, Expr>, handler: Expr, context: &mut
     let mut context = context.clone();
 
     let axum_handler = |axum_req: Request| async move {
+        // #todo consider custom object, not map?
+        // #todo handle POST body parsing.
         // #todo what else to pass to tan_req? (headers, method, ...)
+
         let mut map = HashMap::new();
+
         map.insert("uri".to_string(), Expr::string(axum_req.uri().to_string()));
+
+        // parse headers.
+
+        let mut tan_headers = HashMap::new();
+        for (name, value) in axum_req.headers() {
+            let value = String::from_utf8_lossy(value.as_bytes()).to_string();
+            tan_headers.insert(name.to_string(), Expr::string(value));
+        }
+        map.insert("headers".to_string(), Expr::map(tan_headers));
+
+        let method = axum_req.method().to_string();
+
+        // #todo remove the to_lowercase.
+        if method.to_lowercase() == "post" {
+            // #todo think about the body limit here!
+            let Ok(bytes) = to_bytes(axum_req.into_body(), usize::MAX).await else {
+                return internal_server_error_response("invalid request body");
+            };
+            let Ok(body) = String::from_utf8(bytes.to_vec()) else {
+                return internal_server_error_response("invalid request body");
+            };
+
+            map.insert("body".to_string(), Expr::string(body));
+        }
+
+        // #todo send headers
+        // #todo parse form-encoded and JSON bodies.
+
+        map.insert("method".to_string(), Expr::string(method));
+
         // #todo consider "/http/Request".
         let req = annotate_type(Expr::map(map), "http/Request");
 
@@ -92,6 +130,7 @@ async fn run_server(options: HashMap<String, Expr>, handler: Expr, context: &mut
                 return internal_server_error_response("invalid headers");
             };
 
+            // #todo body can be optional, e.g. redirect response.
             // #todo support a Stream.
             let Some(body) = tuple.next() else {
                 return internal_server_error_response("missing body");
