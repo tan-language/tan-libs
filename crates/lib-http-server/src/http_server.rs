@@ -5,8 +5,9 @@ use axum::{
     extract::Request,
     handler::HandlerWithoutStateExt,
     http::{header, HeaderMap, HeaderName, StatusCode},
+    routing::any,
+    Router,
 };
-
 use tan::{
     context::Context,
     error::Error,
@@ -14,6 +15,7 @@ use tan::{
     expr::{annotate_type, Expr},
     util::{args::unpack_stringable_arg, module_util::require_module},
 };
+use tower_http::services::ServeDir;
 
 static DEFAULT_ADDRESS: &str = "127.0.0.1";
 static DEFAULT_PORT: i64 = 8000; // #todo what should be the default port?
@@ -191,15 +193,43 @@ async fn run_server(options: HashMap<String, Expr>, handler: Expr, context: &mut
 
     let addr = format!("{address}:{port}");
 
+    // #todo #hack temp solution, proper parsing needed!
+    // #todo provide option to config static-files directory (e.g. public)
+    let serve_static_files = options.contains_key("serve-static-files");
+
     // run it
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
 
     // #todo add some kind of tracing?
     // println!("listening on {}", listener.local_addr().unwrap());
 
-    axum::serve(listener, axum_handler.into_make_service())
-        .await
-        .unwrap();
+    if serve_static_files {
+        // #todo also consider ./static as default.
+        let static_files_dir = "./static";
+
+        // #todo this is very hackish, implement properly!
+        // #todo make the catch-all pattern configurable!
+        // #todo can we remove the requirement for a static/* prefix?
+        // #insight maybe static/* prefix is a good idea to clearly differentiate static urls, for CDN etc.
+
+        let serve_dir = ServeDir::new(static_files_dir);
+
+        let router = Router::new()
+            // #insight catches all urls!
+            .nest_service("/static", serve_dir)
+            .route("/", any(axum_handler.clone()))
+            .route("/*path", any(axum_handler));
+
+        // .handle_error(error_handler));
+
+        axum::serve(listener, router.into_make_service())
+            .await
+            .unwrap();
+    } else {
+        axum::serve(listener, axum_handler.into_make_service())
+            .await
+            .unwrap();
+    };
 }
 
 // #todo investigate the Go http-serve API.
