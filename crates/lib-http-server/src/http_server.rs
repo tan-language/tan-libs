@@ -30,6 +30,7 @@ static DEFAULT_PORT: i64 = 8000; // #todo what should be the default port?
 
 // #todo find a better name.
 // #todo use something from Axum.
+// #todo should be able to use `impl IntoResponse` instead.
 pub type HandlerResponse = (StatusCode, HeaderMap, String);
 
 fn internal_server_error_response(reason: &str) -> HandlerResponse {
@@ -85,9 +86,82 @@ async fn tan_request_from_axum_request(axum_req: Request) -> Result<Expr, String
     Ok(annotate_type(Expr::map(map), "http/Request"))
 }
 
+// #todo find a better name.
+async fn axum_response_from_tan_response(tan_resp: Expr) -> HandlerResponse {
+    // #todo the handler should return a tuple (status, headers, body)
+    // #todo add tan-side helpers to generate this tuple!
+    // #todo set content type depending on output.
+    // #todo currently we use an array for the tuple.
+
+    // #insight elaborate handling of the value to avoid excessive cloning.
+
+    let Some(rwlock) = tan_resp.as_array_consuming() else {
+        return internal_server_error_response("invalid response");
+    };
+
+    // #ai
+    // #insight hack to take ownership of the Arc<RwLock> inner value.
+    let dummy = Vec::new();
+    let tuple = {
+        let mut write_guard = rwlock.write().unwrap();
+        std::mem::replace(&mut *write_guard, dummy)
+    };
+
+    let mut tuple = tuple.into_iter();
+
+    // (status-code, headers, body)
+
+    let Some(status_code) = tuple.next() else {
+        return internal_server_error_response("missing status-code");
+    };
+
+    let Some(status_code) = status_code.as_int() else {
+        return internal_server_error_response("invalid status-code");
+    };
+
+    let Ok(status_code) = StatusCode::from_u16(status_code as u16) else {
+        return internal_server_error_response("invalid status-code");
+    };
+
+    let Some(headers) = tuple.next() else {
+        return internal_server_error_response("missing headers");
+    };
+
+    let Some(headers) = headers.as_map() else {
+        return internal_server_error_response("invalid headers");
+    };
+
+    let mut header_map = HeaderMap::new();
+    for (name, value) in headers.iter() {
+        let Some(value) = value.as_stringable() else {
+            return internal_server_error_response(&format!("invalid header `{name}`"));
+        };
+        let Ok(name) = HeaderName::try_from(name) else {
+            return internal_server_error_response(&format!("invalid header `{name}`"));
+        };
+        header_map.insert(name, value.parse().unwrap());
+    }
+
+    // #todo body can be optional, e.g. redirect response.
+    // #todo support a Stream.
+    let Some(body) = tuple.next() else {
+        return internal_server_error_response("missing body");
+    };
+
+    let Some(body) = body.as_stringable_consuming() else {
+        return internal_server_error_response("invalid body");
+    };
+
+    (status_code, header_map, body)
+}
+
 async fn run_server(options: HashMap<String, Expr>, handler: Expr, context: &mut Context) {
     // #todo #think should have separate context per thread? per task/fiber?
     let mut context = context.clone();
+
+    // #todo #hack temp solution, proper parsing needed!
+    // #todo provide option to config static-files directory (e.g. public)
+    let serve_static_files = options.contains_key("serve-static-files");
 
     let axum_handler = |axum_req: Request| async move {
         let tan_req = tan_request_from_axum_request(axum_req).await;
@@ -102,75 +176,7 @@ async fn run_server(options: HashMap<String, Expr>, handler: Expr, context: &mut
         let result = invoke_func(&handler, vec![tan_req], &mut context);
 
         match result {
-            Ok(value) => {
-                // Decode Tan Response.
-
-                // #todo the handler should return a tuple (status, headers, body)
-                // #todo add tan-side helpers to generate this tuple!
-                // #todo set content type depending on output.
-                // #todo currently we use an array for the tuple.
-
-                // #insight elaborate handling of the value to avoid excessive cloning.
-
-                let Some(rwlock) = value.as_array_consuming() else {
-                    return internal_server_error_response("invalid response");
-                };
-
-                // #ai
-                // #insight hack to take ownership of the Arc<RwLock> inner value.
-                let dummy = Vec::new();
-                let tuple = {
-                    let mut write_guard = rwlock.write().unwrap();
-                    std::mem::replace(&mut *write_guard, dummy)
-                };
-
-                let mut tuple = tuple.into_iter();
-
-                // (status-code, headers, body)
-
-                let Some(status_code) = tuple.next() else {
-                    return internal_server_error_response("missing status-code");
-                };
-
-                let Some(status_code) = status_code.as_int() else {
-                    return internal_server_error_response("invalid status-code");
-                };
-
-                let Ok(status_code) = StatusCode::from_u16(status_code as u16) else {
-                    return internal_server_error_response("invalid status-code");
-                };
-
-                let Some(headers) = tuple.next() else {
-                    return internal_server_error_response("missing headers");
-                };
-
-                let Some(headers) = headers.as_map() else {
-                    return internal_server_error_response("invalid headers");
-                };
-
-                let mut header_map = HeaderMap::new();
-                for (name, value) in headers.iter() {
-                    let Some(value) = value.as_stringable() else {
-                        return internal_server_error_response(&format!("invalid header `{name}`"));
-                    };
-                    let Ok(name) = HeaderName::try_from(name) else {
-                        return internal_server_error_response(&format!("invalid header `{name}`"));
-                    };
-                    header_map.insert(name, value.parse().unwrap());
-                }
-
-                // #todo body can be optional, e.g. redirect response.
-                // #todo support a Stream.
-                let Some(body) = tuple.next() else {
-                    return internal_server_error_response("missing body");
-                };
-
-                let Some(body) = body.as_stringable_consuming() else {
-                    return internal_server_error_response("invalid body");
-                };
-
-                (status_code, header_map, body)
-            }
+            Ok(tan_resp) => axum_response_from_tan_response(tan_resp).await,
             Err(error) => {
                 // #todo report that the handler returned non-stringable response.
                 // #todo should also log/trace or println?
@@ -200,10 +206,6 @@ async fn run_server(options: HashMap<String, Expr>, handler: Expr, context: &mut
     };
 
     let addr = format!("{address}:{port}");
-
-    // #todo #hack temp solution, proper parsing needed!
-    // #todo provide option to config static-files directory (e.g. public)
-    let serve_static_files = options.contains_key("serve-static-files");
 
     // run it
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
