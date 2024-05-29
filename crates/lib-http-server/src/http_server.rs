@@ -8,6 +8,7 @@ use axum::{
     routing::any,
     Router,
 };
+use mime_guess::from_path;
 use tan::{
     context::Context,
     error::Error,
@@ -15,7 +16,6 @@ use tan::{
     expr::{annotate_type, Expr},
     util::{args::unpack_stringable_arg, module_util::require_module},
 };
-use tower_http::services::ServeDir;
 
 static DEFAULT_ADDRESS: &str = "127.0.0.1";
 static DEFAULT_PORT: i64 = 8000; // #todo what should be the default port?
@@ -31,7 +31,7 @@ static DEFAULT_PORT: i64 = 8000; // #todo what should be the default port?
 // #todo find a better name.
 // #todo use something from Axum.
 // #todo should be able to use `impl IntoResponse` instead.
-pub type HandlerResponse = (StatusCode, HeaderMap, String);
+pub type HandlerResponse = (StatusCode, HeaderMap, Vec<u8>);
 
 fn internal_server_error_response(reason: &str) -> HandlerResponse {
     let mut header_map = HeaderMap::new();
@@ -39,7 +39,7 @@ fn internal_server_error_response(reason: &str) -> HandlerResponse {
     (
         StatusCode::INTERNAL_SERVER_ERROR,
         header_map,
-        format!("internal server error: {reason}"),
+        format!("internal server error: {reason}").into_bytes(),
     )
 }
 
@@ -87,7 +87,7 @@ async fn tan_request_from_axum_request(axum_req: Request) -> Result<Expr, String
 }
 
 // #todo find a better name.
-async fn axum_response_from_tan_response(tan_resp: Expr) -> HandlerResponse {
+fn axum_response_from_tan_response(tan_resp: Expr) -> HandlerResponse {
     // #todo the handler should return a tuple (status, headers, body)
     // #todo add tan-side helpers to generate this tuple!
     // #todo set content type depending on output.
@@ -152,7 +152,7 @@ async fn axum_response_from_tan_response(tan_resp: Expr) -> HandlerResponse {
         return internal_server_error_response("invalid body");
     };
 
-    (status_code, header_map, body)
+    (status_code, header_map, body.into_bytes())
 }
 
 async fn run_server(options: HashMap<String, Expr>, handler: Expr, context: &mut Context) {
@@ -161,9 +161,36 @@ async fn run_server(options: HashMap<String, Expr>, handler: Expr, context: &mut
 
     // #todo #hack temp solution, proper parsing needed!
     // #todo provide option to config static-files directory (e.g. public)
+    let static_files_dir = "./public";
     let serve_static_files = options.contains_key("serve-static-files");
 
-    let axum_handler = |axum_req: Request| async move {
+    let axum_handler = move |axum_req: Request| async move {
+        if serve_static_files {
+            // #todo #temp if the path contains a dot (i.e. has extension) serve as static file.
+            // #todo for more robust solution, make the exact pattern configurable.
+            // #todo alternatively (and additionally) try to serve a static file if the tan handler returns a 404.
+            let path = axum_req.uri().path();
+            if path.contains('.') {
+                // let serve_file = ServeFile::new(axum_req.uri().path());
+                // return serve_file;
+
+                // #todo _really_ nasty code, use tower's ServeFile instead.
+                let path = format!("{static_files_dir}{path}");
+                if let Ok(file_contents) = tokio::fs::read(&path).await {
+                    let mime_type = from_path(&path).first_or_octet_stream(); // Guess MIME type
+                    let mut header_map = HeaderMap::new();
+                    header_map.insert(header::CONTENT_TYPE, mime_type.to_string().parse().unwrap());
+                    return (StatusCode::FOUND, header_map, file_contents);
+                } else {
+                    return (
+                        StatusCode::NOT_FOUND,
+                        HeaderMap::new(),
+                        "File not found".to_string().into_bytes(),
+                    );
+                }
+            }
+        }
+
         let tan_req = tan_request_from_axum_request(axum_req).await;
 
         if let Err(reason) = tan_req {
@@ -176,7 +203,7 @@ async fn run_server(options: HashMap<String, Expr>, handler: Expr, context: &mut
         let result = invoke_func(&handler, vec![tan_req], &mut context);
 
         match result {
-            Ok(tan_resp) => axum_response_from_tan_response(tan_resp).await,
+            Ok(tan_resp) => axum_response_from_tan_response(tan_resp),
             Err(error) => {
                 // #todo report that the handler returned non-stringable response.
                 // #todo should also log/trace or println?
@@ -214,23 +241,20 @@ async fn run_server(options: HashMap<String, Expr>, handler: Expr, context: &mut
     // println!("listening on {}", listener.local_addr().unwrap());
 
     if serve_static_files {
-        // #todo also consider ./static as default.
-        let static_files_dir = "./static";
-
         // #todo this is very hackish, implement properly!
         // #todo make the catch-all pattern configurable!
-        // #todo can we remove the requirement for a static/* prefix?
-        // #insight maybe static/* prefix is a good idea to clearly differentiate static urls, for CDN etc.
-        // #todo nah, can't work, I would have to put favicons etc in static.
 
-        let serve_dir = ServeDir::new(static_files_dir);
+        // #insight
+        // Originally I tried a `static/*` prefix for asset files. This would
+        // force all static files to be inside a static sub-directory and would
+        // not play well with 'well-known' files like robots.txt, favicon.ico,
+        // etc. It was _not_ a good idea.
 
         let router = Router::new()
-            // #insight catches all urls!
-            .nest_service("/static", serve_dir)
             .route("/", any(axum_handler.clone()))
             .route("/*path", any(axum_handler));
 
+        // #todo add handle error?
         // .handle_error(error_handler));
 
         axum::serve(listener, router.into_make_service())
