@@ -194,7 +194,7 @@ async fn run_server(options: HashMap<String, Expr>, handler: Expr, context: &mut
                     let mime_type = from_path(&path).first_or_octet_stream(); // Guess MIME type
                     let mut header_map = HeaderMap::new();
                     header_map.insert(header::CONTENT_TYPE, mime_type.to_string().parse().unwrap());
-                    return (StatusCode::FOUND, header_map, file_contents);
+                    return (StatusCode::OK, header_map, file_contents);
                 } else {
                     return (
                         StatusCode::NOT_FOUND,
