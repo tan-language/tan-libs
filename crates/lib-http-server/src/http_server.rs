@@ -18,7 +18,10 @@ use tan::{
 };
 
 static DEFAULT_ADDRESS: &str = "127.0.0.1";
-static DEFAULT_PORT: i64 = 8000; // #todo what should be the default port?
+// #todo what should be the default port?
+static DEFAULT_PORT: i64 = 8000;
+// #todo consider using "./static" as the default.
+static DEFAULT_STATIC_FILES_DIR: &str = "./public";
 
 // #see https://docs.rs/axum/latest/axum/response/index.html
 
@@ -160,9 +163,18 @@ async fn run_server(options: HashMap<String, Expr>, handler: Expr, context: &mut
     let mut context = context.clone();
 
     // #todo #hack temp solution, proper parsing needed!
+
     // #todo provide option to config static-files directory (e.g. public)
-    let static_files_dir = "./public";
-    let serve_static_files = options.contains_key("serve-static-files");
+    let static_files_dir = options
+        .get("static-files-dir")
+        .cloned()
+        .and_then(|x| x.as_stringable_consuming())
+        .unwrap_or(String::from(DEFAULT_STATIC_FILES_DIR));
+
+    let serve_static_files = options
+        .get("serve-static-files")
+        .and_then(|x| x.as_bool()) // #insight and_then == flat_map
+        .unwrap_or_default();
 
     let axum_handler = move |axum_req: Request| async move {
         if serve_static_files {
