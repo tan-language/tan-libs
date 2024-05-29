@@ -174,6 +174,8 @@ async fn run_server(options: HashMap<String, Expr>, handler: Expr, context: &mut
                 // let serve_file = ServeFile::new(axum_req.uri().path());
                 // return serve_file;
 
+                // #todo cache files?
+
                 // #todo _really_ nasty code, use tower's ServeFile instead.
                 let path = format!("{static_files_dir}{path}");
                 if let Ok(file_contents) = tokio::fs::read(&path).await {
