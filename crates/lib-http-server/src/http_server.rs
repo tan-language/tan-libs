@@ -42,56 +42,64 @@ fn internal_server_error_response(reason: &str) -> HandlerResponse {
     )
 }
 
+// #todo find a better name.
+async fn tan_request_from_axum_request(axum_req: Request) -> Result<Expr, String> {
+    // #todo consider custom object, not map?
+    // #todo what else to pass to tan_req? (headers, method, ...)
+
+    let mut map = HashMap::new();
+
+    map.insert("uri".to_string(), Expr::string(axum_req.uri().to_string()));
+
+    // parse headers.
+
+    let mut tan_headers = HashMap::new();
+    for (name, value) in axum_req.headers() {
+        let value = String::from_utf8_lossy(value.as_bytes()).to_string();
+        tan_headers.insert(name.to_string(), Expr::string(value));
+    }
+    map.insert("headers".to_string(), Expr::map(tan_headers));
+
+    let method = axum_req.method().to_string();
+
+    if method == "POST" {
+        // #todo consider automatically decoding on :method POST, :content-type "application/x-www-form-urlencoded" -> better NO!
+
+        // #todo think about the body limit here!
+        let Ok(bytes) = to_bytes(axum_req.into_body(), usize::MAX).await else {
+            return Err(String::from("invalid request body"));
+        };
+        let Ok(body) = String::from_utf8(bytes.to_vec()) else {
+            return Err(String::from("invalid request body"));
+        };
+
+        map.insert("body".to_string(), Expr::string(body));
+    }
+
+    // #todo send headers
+    // #todo parse form-encoded and JSON bodies.
+
+    map.insert("method".to_string(), Expr::string(method));
+
+    // #todo consider "/http/Request".
+    Ok(annotate_type(Expr::map(map), "http/Request"))
+}
+
 async fn run_server(options: HashMap<String, Expr>, handler: Expr, context: &mut Context) {
     // #todo #think should have separate context per thread? per task/fiber?
     let mut context = context.clone();
 
     let axum_handler = |axum_req: Request| async move {
-        // #todo consider custom object, not map?
-        // #todo handle POST body parsing.
-        // #todo what else to pass to tan_req? (headers, method, ...)
+        let tan_req = tan_request_from_axum_request(axum_req).await;
 
-        // Encode Tan Request.
-
-        let mut map = HashMap::new();
-
-        map.insert("uri".to_string(), Expr::string(axum_req.uri().to_string()));
-
-        // parse headers.
-
-        let mut tan_headers = HashMap::new();
-        for (name, value) in axum_req.headers() {
-            let value = String::from_utf8_lossy(value.as_bytes()).to_string();
-            tan_headers.insert(name.to_string(), Expr::string(value));
-        }
-        map.insert("headers".to_string(), Expr::map(tan_headers));
-
-        let method = axum_req.method().to_string();
-
-        if method == "POST" {
-            // #todo consider automatically decoding on :method POST, :content-type "application/x-www-form-urlencoded" -> better NO!
-
-            // #todo think about the body limit here!
-            let Ok(bytes) = to_bytes(axum_req.into_body(), usize::MAX).await else {
-                return internal_server_error_response("invalid request body");
-            };
-            let Ok(body) = String::from_utf8(bytes.to_vec()) else {
-                return internal_server_error_response("invalid request body");
-            };
-
-            map.insert("body".to_string(), Expr::string(body));
+        if let Err(reason) = tan_req {
+            return internal_server_error_response(&reason);
         }
 
-        // #todo send headers
-        // #todo parse form-encoded and JSON bodies.
-
-        map.insert("method".to_string(), Expr::string(method));
-
-        // #todo consider "/http/Request".
-        let req = annotate_type(Expr::map(map), "http/Request");
+        let tan_req = tan_req.unwrap();
 
         // #todo handle conversion of more return types.
-        let result = invoke_func(&handler, vec![req], &mut context);
+        let result = invoke_func(&handler, vec![tan_req], &mut context);
 
         match result {
             Ok(value) => {
@@ -211,6 +219,7 @@ async fn run_server(options: HashMap<String, Expr>, handler: Expr, context: &mut
         // #todo make the catch-all pattern configurable!
         // #todo can we remove the requirement for a static/* prefix?
         // #insight maybe static/* prefix is a good idea to clearly differentiate static urls, for CDN etc.
+        // #todo nah, can't work, I would have to put favicons etc in static.
 
         let serve_dir = ServeDir::new(static_files_dir);
 
