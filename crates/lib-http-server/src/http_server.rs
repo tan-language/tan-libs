@@ -307,6 +307,8 @@ pub fn http_serve(args: &[Expr], context: &mut Context) -> Result<Expr, Error> {
         ));
     };
 
+    // #idea can use dynamic scoping to init new runtime.
+    // #todo do *not* create a new runtime here, just use a runtime from context!
     let rt = tokio::runtime::Runtime::new().unwrap();
     // #todo can we remove the clones?
     rt.block_on(run_server(options.clone(), handler.clone(), context));
