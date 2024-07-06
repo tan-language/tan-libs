@@ -1,0 +1,12 @@
+[package]
+name = "lib-codec-uri"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "tancodecuri"
+crate-type = ["dylib"]
+
+[dependencies]
+tan.workspace = true
+urlencoding = { version = "2.1" }

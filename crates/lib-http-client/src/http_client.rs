@@ -175,7 +175,9 @@ pub fn http_post(args: &[Expr], _context: &mut Context) -> Result<Expr, Error> {
 
 pub fn import_lib_http_client(context: &mut Context) {
     let module = require_module("network/http/client", context);
+    // (get url headers)
     module.insert("get", Expr::ForeignFunc(Arc::new(http_get)));
+    // (post url body headers)
     module.insert("post", Expr::ForeignFunc(Arc::new(http_post)));
 }
 
