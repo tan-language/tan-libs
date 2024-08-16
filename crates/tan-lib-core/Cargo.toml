@@ -2,7 +2,7 @@
 name = "tan-lib-core"
 description = "The Tan language"
 repository = "https://github.com/tan-language/tan-libs/crate/tan-lib-core"
-keywords = ["tan", "std", "core", "standard library"]
+keywords = ["tan", "std", "core", "library"]
 authors = ["Georgios Moschovitis <gmosx@reizu.com>"]
 version.workspace = true
 license.workspace = true
