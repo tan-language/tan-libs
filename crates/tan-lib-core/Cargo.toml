@@ -12,7 +12,8 @@ edition.workspace = true
 name = "tancore"
 
 [dependencies]
-tan.workspace = true
+# tan.workspace = true
+tan = "0.14"
 libloading = "0.8"
 regex = { version = "1" }
 uuid = { version = "1.7", features = ["v4"] }
