@@ -71,8 +71,7 @@ use self::{
 // #todo call the foreign setup from the actual tan module file.
 
 // #todo find a good name for this.
-#[no_mangle]
-pub fn install_foreign_dyn_lib(context: &mut Context) {
+pub fn setup_lib(context: &mut Context) {
     setup_lib_fs(context);
     setup_lib_process(context);
     setup_lib_rand(context);
