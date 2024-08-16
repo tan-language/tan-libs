@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use crate::{
+use tan::{
     context::Context,
     error::Error,
     expr::Expr,
@@ -26,7 +26,7 @@ pub fn setup_lib_error(context: &mut Context) {
 
 #[cfg(test)]
 mod tests {
-    use crate::{api::eval_string, context::Context, expr::format_value};
+    use tan::{api::eval_string, context::Context, expr::format_value};
 
     #[test]
     fn error_new_usage() {

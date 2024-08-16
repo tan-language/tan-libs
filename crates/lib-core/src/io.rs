@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use crate::{
+use tan::{
     api::compile_string,
     context::Context,
     error::Error,

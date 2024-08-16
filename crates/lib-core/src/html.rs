@@ -15,7 +15,7 @@
 
 use std::sync::Arc;
 
-use crate::{
+use tan::{
     context::Context,
     error::Error,
     eval::util::eval_module,
@@ -188,7 +188,7 @@ pub fn setup_lib_html(context: &mut Context) {
 
 #[cfg(test)]
 mod tests {
-    use crate::{api::eval_string, context::Context};
+    use tan::{api::eval_string, context::Context};
 
     // #todo add a test with arrays and conditionals.
 

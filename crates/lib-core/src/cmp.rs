@@ -1,6 +1,6 @@
 use std::{cmp::Ordering, sync::Arc};
 
-use crate::{
+use tan::{
     context::Context,
     expr::{annotate_type, Expr},
     util::module_util::require_module,
@@ -44,7 +44,7 @@ mod tests {
 
     use assert_matches::assert_matches;
 
-    use crate::{expr::Expr, library::cmp::rust_ordering_from_tan_ordering};
+    use tan::{expr::Expr, library::cmp::rust_ordering_from_tan_ordering};
 
     #[test]
     fn rust_ordering_from_tan_ordering_usage() {

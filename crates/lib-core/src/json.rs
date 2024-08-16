@@ -2,7 +2,7 @@ use std::{collections::HashMap, sync::Arc};
 
 use serde_json::{json, Map, Value};
 
-use crate::{
+use tan::{
     context::Context,
     error::Error,
     expr::Expr,
@@ -148,7 +148,7 @@ pub fn setup_lib_codec_json(context: &mut Context) {
 mod tests {
     use assert_matches::assert_matches;
 
-    use crate::{
+    use tan::{
         api::eval_string,
         context::Context,
         expr::{format_value, Expr},

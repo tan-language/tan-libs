@@ -5,7 +5,7 @@
 
 use std::sync::Arc;
 
-use crate::{
+use tan::{
     context::Context,
     error::Error,
     expr::{format_value, Expr},
@@ -143,7 +143,7 @@ pub fn setup_lib_css_expr(context: &mut Context) {
 
 #[cfg(test)]
 mod tests {
-    use crate::{api::eval_string, context::Context};
+    use tan::{api::eval_string, context::Context};
 
     #[test]
     fn to_expr_to_css_usage() {

@@ -6,7 +6,7 @@
 
 use std::sync::Arc;
 
-use crate::{
+use tan::{
     context::Context,
     error::Error,
     expr::{annotate_type, has_type_annotation, Expr},
@@ -166,7 +166,7 @@ pub fn setup_lib_math_complex(context: &mut Context) {
 
 #[cfg(test)]
 mod tests {
-    use crate::{api::eval_string, context::Context, expr::format_value};
+    use tan::{api::eval_string, context::Context, expr::format_value};
 
     #[test]
     fn complex_new_usage() {

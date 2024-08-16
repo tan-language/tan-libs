@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use crate::{
+use tan::{
     context::Context,
     error::Error,
     expr::Expr,

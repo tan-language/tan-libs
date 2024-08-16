@@ -6,7 +6,7 @@ use std::{
 
 use libloading::Library;
 
-use crate::{
+use tan::{
     api::compile_string,
     context::Context,
     error::Error,
@@ -391,7 +391,7 @@ pub fn setup_lib_lang(context: &mut Context) {
 
 #[cfg(test)]
 mod tests {
-    use crate::{api::eval_string, context::Context, expr::format_value};
+    use tan::{api::eval_string, context::Context, expr::format_value};
 
     #[test]
     fn with_type_usage() {

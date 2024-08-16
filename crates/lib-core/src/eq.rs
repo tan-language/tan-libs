@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use crate::{
+use tan::{
     context::Context,
     error::Error,
     expr::Expr,
@@ -293,7 +293,7 @@ pub fn setup_lib_eq(context: &mut Context) {
 mod tests {
     use assert_matches::assert_matches;
 
-    use crate::{api::eval_string, context::Context, expr::Expr};
+    use tan::{api::eval_string, context::Context, expr::Expr};
 
     #[test]
     fn not_eq_usage() {

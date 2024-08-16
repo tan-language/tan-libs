@@ -505,7 +505,7 @@ pub fn setup_lib_arithmetic(context: &mut Context) {
 
 #[cfg(test)]
 mod tests {
-    use crate::{api::eval_string, context::Context, expr::format_value};
+    use tan::{api::eval_string, context::Context, expr::format_value};
 
     #[test]
     fn int_compare_usage() {

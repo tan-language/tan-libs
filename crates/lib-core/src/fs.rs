@@ -3,11 +3,11 @@ use std::io::Write;
 use std::path::Path;
 use std::sync::{Arc, RwLock};
 
-use crate::error::ErrorVariant;
-use crate::expr::annotate_type;
-use crate::util::expect_lock_write;
-use crate::util::module_util::require_module;
-use crate::{context::Context, error::Error, expr::Expr};
+use tan::error::ErrorVariant;
+use tan::expr::annotate_type;
+use tan::util::expect_lock_write;
+use tan::util::module_util::require_module;
+use tan::{context::Context, error::Error, expr::Expr};
 
 // #todo consider system/fs, host/fs, os/fs.
 
