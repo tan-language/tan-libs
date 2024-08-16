@@ -1,6 +1,11 @@
 [package]
 name = "tan-lib-core"
+description = "The Tan language"
+repository = "https://github.com/tan-language/tan-libs/crate/tan-lib-core"
+keywords = ["tan", "std", "core", "standard library"]
+authors = ["Georgios Moschovitis <gmosx@reizu.com>"]
 version.workspace = true
+license.workspace = true
 edition.workspace = true
 
 [lib]
