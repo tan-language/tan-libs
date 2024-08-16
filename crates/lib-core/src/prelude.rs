@@ -1,9 +1,9 @@
 use std::sync::Arc;
 
-use crate::context::Context;
-use crate::error::Error;
-use crate::expr::Expr;
-use crate::util::module_util::require_module;
+use tan::context::Context;
+use tan::error::Error;
+use tan::expr::Expr;
+use tan::util::module_util::require_module;
 
 use super::arithmetic::setup_lib_arithmetic;
 use super::bool::setup_lib_bool;
@@ -23,6 +23,8 @@ use super::range::setup_lib_range;
 use super::seq::setup_lib_seq;
 use super::string::setup_lib_string;
 use super::u8::setup_lib_u8;
+
+// #todo Move prelude to the `tan` crate?
 
 // #todo temporarily here, move to String?
 /// Formats an expression into a string.

@@ -70,7 +70,9 @@ use self::{
 
 // #todo call the foreign setup from the actual tan module file.
 
-pub fn setup_lib(context: &mut Context) {
+// #todo find a good name for this.
+#[no_mangle]
+pub fn install_foreign_dyn_lib(context: &mut Context) {
     setup_lib_fs(context);
     setup_lib_process(context);
     setup_lib_rand(context);
@@ -88,11 +90,3 @@ pub fn setup_lib(context: &mut Context) {
 
     setup_lib_prelude(context);
 }
-
-// use tan::{context::Context, library::uuid::setup_lib_uuid};
-
-// pub mod uuid;
-
-// pub fn setup_lib(context: &mut Context) {
-//     setup_lib_uuid(context);
-// }

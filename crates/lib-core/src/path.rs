@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use crate::{context::Context, error::Error, expr::Expr, util::module_util::require_module};
+use tan::{context::Context, error::Error, expr::Expr, util::module_util::require_module};
 
 // #todo consider to associate most functions to the `Path` type.
 // #todo support (path :extension)
@@ -97,7 +97,7 @@ pub fn setup_lib_path(context: &mut Context) {
 
 #[cfg(test)]
 mod tests {
-    use crate::{api::eval_string, context::Context};
+    use tan::{api::eval_string, context::Context};
 
     #[test]
     fn path_get_dirname_usage() {

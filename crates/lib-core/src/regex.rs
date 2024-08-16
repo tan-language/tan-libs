@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use regex::Regex;
 
-use crate::{
+use tan::{
     context::Context,
     error::Error,
     expr::{annotate_type, Expr},
@@ -181,7 +181,7 @@ pub fn setup_lib_regex(context: &mut Context) {
 
 #[cfg(test)]
 mod tests {
-    use crate::{api::eval_string, context::Context, expr::format_value};
+    use tan::{api::eval_string, context::Context, expr::format_value};
 
     #[test]
     fn is_matching_usage() {

@@ -275,7 +275,7 @@ pub fn setup_lib_map(context: &mut Context) {
 mod tests {
     use assert_matches::assert_matches;
 
-    use crate::{
+    use tan::{
         api::eval_string,
         context::Context,
         expr::{format_value, Expr},

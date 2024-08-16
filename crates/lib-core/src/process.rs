@@ -4,9 +4,9 @@ use std::io::Write;
 use std::process::Stdio;
 use std::sync::Arc;
 
-use crate::error::Error;
-use crate::util::module_util::require_module;
-use crate::{context::Context, expr::Expr};
+use tan::error::Error;
+use tan::util::module_util::require_module;
+use tan::{context::Context, expr::Expr};
 
 // https://doc.rust-lang.org/std/env/index.html
 

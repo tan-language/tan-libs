@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use crate::{context::Context, error::Error, expr::Expr, util::module_util::require_module};
+use tan::{context::Context, error::Error, expr::Expr, util::module_util::require_module};
 
 // #todo make some fields optional.
 // struct ForeignRange<T> {
@@ -129,7 +129,7 @@ pub fn setup_lib_range(context: &mut Context) {
 
 #[cfg(test)]
 mod tests {
-    use crate::{api::eval_string, context::Context, expr::format_value};
+    use tan::{api::eval_string, context::Context, expr::format_value};
 
     #[test]
     fn range_new_usage() {

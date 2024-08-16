@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use crate::{
+use tan::{
     context::Context,
     error::Error,
     eval::{invoke, invoke_func},
@@ -496,7 +496,7 @@ pub fn setup_lib_seq(context: &mut Context) {
 
 #[cfg(test)]
 mod tests {
-    use crate::{api::eval_string, context::Context, expr::format_value};
+    use tan::{api::eval_string, context::Context, expr::format_value};
 
     #[test]
     fn list_cons_usage() {
