@@ -4,5 +4,11 @@ resolver = "2"
 
 members = ["crates/*"]
 
+[workspace.package]
+version = "0.15.0"
+edition = "2021"
+authors = ["Georgios Moschovitis <george.moschovitis@gmail.com>"]
+license = "Apache-2.0"
+
 [workspace.dependencies]
 tan = { path = "../tan", version = "0.15" }
