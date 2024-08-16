@@ -1,5 +1,5 @@
 [package]
-name = "lib-http-server"
+name = "tan-lib-http-server"
 version = "0.1.0"
 edition = "2021"
 
