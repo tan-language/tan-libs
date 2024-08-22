@@ -2,7 +2,7 @@
 
 #warning NOT USED yet.
 
-Foreign code liked statically to the tan executable.
+Foreign code linked statically to the tan executable.
 
 ## Status
 
