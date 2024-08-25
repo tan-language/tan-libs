@@ -1,4 +1,4 @@
-use std::{collections::HashMap, sync::Arc};
+use std::collections::HashMap;
 
 use axum::{
     body::to_bytes,
@@ -320,7 +320,7 @@ pub fn http_serve(args: &[Expr], context: &mut Context) -> Result<Expr, Error> {
 // #todo what is a good name?
 // #todo consider automatically decoding on :method POST, :content-type "application/x-www-form-urlencoded"
 // #insight better don't decode automatically, avoid unnecessary magic.
-pub fn read_form_urlencoded(args: &[Expr], _context: &mut Context) -> Result<Expr, Error> {
+pub fn read_form_urlencoded(args: &[Expr]) -> Result<Expr, Error> {
     let body = unpack_stringable_arg(args, 0, "body")?;
     let data: HashMap<_, _> = url::form_urlencoded::parse(body.as_bytes())
         .into_owned()
@@ -331,12 +331,12 @@ pub fn read_form_urlencoded(args: &[Expr], _context: &mut Context) -> Result<Exp
 
 pub fn import_lib_http_server(context: &mut Context) {
     let module = require_module("network/http/server", context);
-    module.insert("serve", Expr::ForeignFunc(Arc::new(http_serve)));
+    module.insert("serve", Expr::foreign_func_mut_context(&http_serve));
     // #todo move to another namespace.
     // #todo what would be a good name?
     // #insight form-urlencoded is more accurate and actually different than urlencoded.
     module.insert(
         "read-form-urlencoded",
-        Expr::ForeignFunc(Arc::new(read_form_urlencoded)),
+        Expr::foreign_func(&read_form_urlencoded),
     );
 }

@@ -25,7 +25,7 @@
 
 // #todo implement general http/fetch.
 
-use std::{collections::HashMap, str::FromStr, sync::Arc, time::Duration};
+use std::{collections::HashMap, str::FromStr, time::Duration};
 
 use reqwest::header::{HeaderMap, HeaderName, HeaderValue};
 use tan::{context::Context, error::Error, expr::Expr, util::module_util::require_module};
@@ -87,7 +87,7 @@ fn build_tan_response(resp: reqwest::Result<reqwest::blocking::Response>) -> Res
     Ok(Expr::map(tan_response))
 }
 
-pub fn http_get(args: &[Expr], _context: &mut Context) -> Result<Expr, Error> {
+pub fn http_get(args: &[Expr]) -> Result<Expr, Error> {
     let [url, ..] = args else {
         return Err(Error::invalid_arguments(
             "`get` requires `url` argument",
@@ -117,7 +117,7 @@ pub fn http_get(args: &[Expr], _context: &mut Context) -> Result<Expr, Error> {
 
 // #example (http/post "https://httpbin.org/post" "payload" {"user-agent" "tan" "x-tan-header" "it works"})
 // #todo support non-string bodies.
-pub fn http_post(args: &[Expr], _context: &mut Context) -> Result<Expr, Error> {
+pub fn http_post(args: &[Expr]) -> Result<Expr, Error> {
     // #insight `_` does not work in the pattern.
     // #insight header are extacted later in the function.
     let [url, body, ..] = args else {
@@ -176,9 +176,9 @@ pub fn http_post(args: &[Expr], _context: &mut Context) -> Result<Expr, Error> {
 pub fn import_lib_http_client(context: &mut Context) {
     let module = require_module("network/http/client", context);
     // (get url headers)
-    module.insert("get", Expr::ForeignFunc(Arc::new(http_get)));
+    module.insert("get", Expr::foreign_func(&http_get));
     // (post url body headers)
-    module.insert("post", Expr::ForeignFunc(Arc::new(http_post)));
+    module.insert("post", Expr::foreign_func(&http_post));
 }
 
 // #todo add a unit test that at least exercises these functions.

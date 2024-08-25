@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use comrak::{markdown_to_html, Options};
 
 use tan::{
@@ -15,7 +13,7 @@ use tan::{
 
 // #insight some Github Flavored Markdown extensions are supported.
 
-pub fn html_from_common_mark(args: &[Expr], _context: &mut Context) -> Result<Expr, Error> {
+pub fn html_from_common_mark(args: &[Expr]) -> Result<Expr, Error> {
     let markup = unpack_stringable_arg(args, 0, "markup")?;
 
     // #todo consider renaming :unsafe to :allow-html?
@@ -66,10 +64,7 @@ pub fn import_lib_text_cmark(context: &mut Context) {
     // (let html cmark/expr->html expr)
     // (let html cmark/to-html markup)
     // (let html cmark/to-html markup {:unsafe true})
-    module.insert(
-        "to-html",
-        Expr::ForeignFunc(Arc::new(html_from_common_mark)),
-    );
+    module.insert("to-html", Expr::foreign_func(&html_from_common_mark));
 }
 
 #[cfg(test)]

@@ -24,7 +24,7 @@ struct PngCoderData {
     pub writable: Expr,
 }
 
-pub fn png_coder_new(args: &[Expr], _context: &mut Context) -> Result<Expr, Error> {
+pub fn png_coder_new(args: &[Expr]) -> Result<Expr, Error> {
     let width = unpack_int_arg(args, 0, "width")?;
     let height = unpack_int_arg(args, 1, "height")?;
     let _encoding = unpack_stringable_arg(args, 2, "encoding")?;
@@ -56,7 +56,7 @@ pub fn png_coder_new(args: &[Expr], _context: &mut Context) -> Result<Expr, Erro
     Ok(annotate_type(expr, "Coder"))
 }
 
-pub fn png_coder_write(args: &[Expr], _context: &mut Context) -> Result<Expr, Error> {
+pub fn png_coder_write(args: &[Expr]) -> Result<Expr, Error> {
     let coder = unpack_foreign_struct_arg(args, 0, "coder", "Coder")?;
     let Some(coder) = coder.downcast_ref::<PngCoderData>() else {
         return Err(Error::invalid_arguments("invalid Coder", args[0].range()));
@@ -92,9 +92,6 @@ pub fn import_lib_image_png(context: &mut Context) {
     // #todo consider other paths?
     let module = require_module("image/png", context);
 
-    module.insert("Coder", Expr::ForeignFunc(Arc::new(png_coder_new)));
-    module.insert(
-        "write$$Coder$$Buffer",
-        Expr::ForeignFunc(Arc::new(png_coder_write)),
-    );
+    module.insert("Coder", Expr::foreign_func(&png_coder_new));
+    module.insert("write$$Coder$$Buffer", Expr::foreign_func(&png_coder_write));
 }
