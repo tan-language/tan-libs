@@ -1,16 +1,8 @@
-# PROFILE="debug"
-PROFILE="release"
-
-cargo b --$PROFILE
-
-#todo Make it just run the `install.sh` files in the crates?
-
-cp target/$PROFILE/libtancmark.so $TAN_ROOT/@std/text/cmark/.
-cp target/$PROFILE/libtanhttpclient.so $TAN_ROOT/@std/network/http/client/.
-cp target/$PROFILE/libtanhttpserver.so $TAN_ROOT/@std/network/http/server/.
-cp target/$PROFILE/libtanimagepng.so $TAN_ROOT/@std/image/png/.
-cp target/$PROFILE/libtancodecuri.so $TAN_ROOT/@std/codec/uri/.
-cp target/$PROFILE/libtantext.so $TAN_ROOT/@std/text/.
-cp target/$PROFILE/libtanuuid.so $TAN_ROOT/@std/uuid/.
-
-crates/lib-tan-regex/install.sh
+pushd crates/lib-tan-cmark; ./install.sh; popd
+pushd crates/lib-tan-codec-uri; ./install.sh; popd
+pushd crates/lib-tan-http-client; ./install.sh; popd
+pushd crates/lib-tan-http-server; ./install.sh; popd
+pushd crates/lib-tan-image-png; ./install.sh; popd
+pushd crates/lib-tan-regex; ./install.sh; popd
+pushd crates/lib-tan-text; ./install.sh; popd
+pushd crates/lib-tan-uuid; ./install.sh; popd
