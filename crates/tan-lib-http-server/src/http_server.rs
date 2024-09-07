@@ -159,6 +159,10 @@ fn axum_response_from_tan_response(tan_resp: Expr) -> HandlerResponse {
 }
 
 async fn run_server(options: HashMap<String, Expr>, handler: Expr, context: &mut Context) {
+    // #todo #IMPORTANT
+    // Instead of forcing all Expr variants to be Send/Sync, check here that the
+    // handler is something like a Expr::SyncFunc variant.
+
     // #todo #think should have separate context per thread? per task/fiber?
     let mut context = context.clone();
 

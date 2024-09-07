@@ -7,9 +7,7 @@ use tan::{
     error::Error,
     expr::{annotate_type, expr_clone, Expr},
     util::{
-        args::{
-            unpack_buffer_arg, unpack_foreign_struct_arg, unpack_int_arg, unpack_stringable_arg,
-        },
+        args::{unpack_buffer_arg, unpack_foreign_arg, unpack_int_arg, unpack_stringable_arg},
         expect_lock_write,
         module_util::require_module,
     },
@@ -51,18 +49,18 @@ pub fn png_coder_new(args: &[Expr]) -> Result<Expr, Error> {
         writable: expr_clone(writable),
     };
 
-    let expr = Expr::ForeignStruct(Arc::new(data));
+    let expr = Expr::Foreign(Arc::new(data));
 
     Ok(annotate_type(expr, "Coder"))
 }
 
 pub fn png_coder_write(args: &[Expr]) -> Result<Expr, Error> {
-    let coder = unpack_foreign_struct_arg(args, 0, "coder", "Coder")?;
+    let coder = unpack_foreign_arg(args, 0, "coder", "Coder")?;
     let Some(coder) = coder.downcast_ref::<PngCoderData>() else {
         return Err(Error::invalid_arguments("invalid Coder", args[0].range()));
     };
 
-    let Expr::ForeignStructMut(writable) = coder.writable.unpack() else {
+    let Expr::ForeignMut(writable) = coder.writable.unpack() else {
         return Err(Error::invalid_arguments("invalid Writable", None));
     };
     let writable = expect_lock_write(writable);

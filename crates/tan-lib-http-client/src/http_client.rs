@@ -3,6 +3,9 @@
 // network/http/ws
 // network/smtp
 
+// #todo Implement a Client
+// #todo Support default headers in Client.
+
 // #todo no need for the `network/prefix`?
 // #todo use `net` instead of `network`?
 
@@ -116,6 +119,7 @@ pub fn http_get(args: &[Expr]) -> Result<Expr, Error> {
 }
 
 // #example (http/post "https://httpbin.org/post" "payload" {"user-agent" "tan" "x-tan-header" "it works"})
+// #insight Also supports headers as a third parameter.
 // #todo support non-string bodies.
 pub fn http_post(args: &[Expr]) -> Result<Expr, Error> {
     // #insight `_` does not work in the pattern.
