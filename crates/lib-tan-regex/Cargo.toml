@@ -1,0 +1,14 @@
+[package]
+name = "lib-tan-regex"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[lib]
+name = "tanregex"
+crate-type = ["dylib"]
+
+[dependencies]
+tan.workspace = true
+regex = { version = "1" }
