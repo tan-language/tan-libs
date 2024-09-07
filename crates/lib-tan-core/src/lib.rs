@@ -1,7 +1,4 @@
-pub mod uuid;
-
-use tan::context::Context;
-use uuid::setup_lib_uuid;
+// #note #WARNING Not used yet!
 
 // #todo Move all the code from tan/library.
 
@@ -29,6 +26,6 @@ use uuid::setup_lib_uuid;
 // #todo call the foreign setup from the actual tan module file.
 
 // #todo find a good name for this.
-pub fn setup_lib(context: &mut Context) {
-    setup_lib_uuid(context);
-}
+// pub fn setup_lib(context: &mut Context) {
+//     setup_lib_uuid(context);
+// }

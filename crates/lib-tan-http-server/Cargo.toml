@@ -1,7 +1,9 @@
 [package]
-name = "tan-lib-http-server"
-version = "0.1.0"
-edition = "2021"
+name = "lib-tan-http-server"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
 
 [lib]
 name = "tanhttpserver"

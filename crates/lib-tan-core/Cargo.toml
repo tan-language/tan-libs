@@ -1,12 +1,12 @@
 [package]
-name = "tan-lib-core"
+name = "lib-tan-core"
 description = "The Tan language"
-repository = "https://github.com/tan-language/tan-libs/crate/tan-lib-core"
+repository = "https://github.com/tan-language/tan-libs/crate/lib-tan-core"
 keywords = ["tan", "std", "core", "library"]
-authors = ["Georgios Moschovitis <gmosx@reizu.com>"]
 version.workspace = true
-license.workspace = true
 edition.workspace = true
+authors.workspace = true
+license.workspace = true
 
 [lib]
 name = "tancore"
@@ -15,7 +15,6 @@ name = "tancore"
 tan.workspace = true
 libloading = "0.8"
 regex = { version = "1" }
-uuid = { version = "1.7", features = ["v4"] }
 serde = { version = "1", features = ["derive"], optional = true }
 serde_json = { version = "1", optional = true }
 rand = "0.8"

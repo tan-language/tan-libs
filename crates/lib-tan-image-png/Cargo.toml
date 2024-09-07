@@ -1,0 +1,14 @@
+[package]
+name = "lib-tan-image-png"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[lib]
+name = "tanimagepng"
+crate-type = ["dylib"]
+
+[dependencies]
+tan.workspace = true
+png = { version = "0.17" }
