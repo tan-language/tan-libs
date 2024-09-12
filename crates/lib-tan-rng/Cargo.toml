@@ -1,0 +1,14 @@
+[package]
+name = "lib-tan-rng"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[lib]
+name = "tanrng"
+crate-type = ["dylib"]
+
+[dependencies]
+tan.workspace = true
+rand = "0.8"

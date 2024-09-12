@@ -5,5 +5,6 @@ pushd crates/lib-tan-html; ./install.sh; popd
 pushd crates/lib-tan-http-server; ./install.sh; popd
 pushd crates/lib-tan-image-png; ./install.sh; popd
 pushd crates/lib-tan-regex; ./install.sh; popd
+pushd crates/lib-tan-rng; ./install.sh; popd
 pushd crates/lib-tan-text; ./install.sh; popd
 pushd crates/lib-tan-uuid; ./install.sh; popd
