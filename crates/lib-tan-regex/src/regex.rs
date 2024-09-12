@@ -6,13 +6,13 @@ use tan::{
     util::{args::unpack_stringable_arg, module_util::require_module},
 };
 
-// #todo have more sophisticated patterns and matching.
-// #toto check swift patterns.
+// #todo Have more sophisticated patterns and matching.
+// #toto Check swift patterns.
 
-// #todo introduce escaping
-// #todo introduce capturing
-// #todo introduce matching
-// #todo introduce is-matching? or just matching?
+// #todo Introduce escaping
+// #todo Introduce capturing
+// #todo Introduce matching
+// #todo Introduce is-matching? or just matching?
 
 pub fn regex_new(args: &[Expr]) -> Result<Expr, Error> {
     // #todo name this just `expr`?
@@ -161,6 +161,7 @@ pub fn import_lib_regex(context: &mut Context) {
 
     // #todo consider is-matching?, nah, let's make the `?` suffix useful.
     module.insert("matching?", Expr::foreign_func(&regex_is_matching));
+    module.insert("is-matching?", Expr::foreign_func(&regex_is_matching));
     module.insert("split$$Regex$$String", Expr::foreign_func(&regex_split));
     module.insert("split-matches", Expr::foreign_func(&regex_split_matches));
 

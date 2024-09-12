@@ -1,0 +1,13 @@
+[package]
+name = "lib-tan-html"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[lib]
+name = "tanhtml"
+crate-type = ["dylib"]
+
+[dependencies]
+tan.workspace = true
