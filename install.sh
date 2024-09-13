@@ -1,4 +1,5 @@
 pushd crates/lib-tan-cmark; ./install.sh; popd
+pushd crates/lib-tan-codec-json; ./install.sh; popd
 pushd crates/lib-tan-codec-uri; ./install.sh; popd
 pushd crates/lib-tan-http-client; ./install.sh; popd
 pushd crates/lib-tan-html; ./install.sh; popd
