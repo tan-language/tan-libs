@@ -12,3 +12,4 @@ license = "Apache-2.0"
 
 [workspace.dependencies]
 tan = { path = "../tan", version = "0.16" }
+assert_matches = "1.5"
