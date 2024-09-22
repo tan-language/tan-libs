@@ -22,10 +22,19 @@ struct PngCoderData {
     pub writable: Expr,
 }
 
+fn color_type_from_encoding(encoding: &str) -> ColorType {
+    match encoding {
+        "gray-8" => ColorType::Grayscale,
+        "rgb" => ColorType::Rgb,
+        "rgba" => ColorType::Rgba,
+        _ => ColorType::Rgba,
+    }
+}
+
 pub fn png_coder_new(args: &[Expr]) -> Result<Expr, Error> {
     let width = unpack_int_arg(args, 0, "width")?;
     let height = unpack_int_arg(args, 1, "height")?;
-    let _encoding = unpack_stringable_arg(args, 2, "encoding")?;
+    let encoding = unpack_stringable_arg(args, 2, "encoding")?;
     let Some(writable) = args.get(3) else {
         return Err(Error::invalid_arguments(
             "missing `writeable` argument",
@@ -44,8 +53,7 @@ pub fn png_coder_new(args: &[Expr]) -> Result<Expr, Error> {
     let data = PngCoderData {
         width: width as u32,
         height: height as u32,
-        // #todo set color_type based on encoding.
-        color_type: ColorType::Grayscale,
+        color_type: color_type_from_encoding(encoding),
         writable: expr_clone(writable),
     };
 

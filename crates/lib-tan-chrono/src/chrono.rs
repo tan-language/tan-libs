@@ -359,6 +359,8 @@ pub fn chrono_date_format(args: &[Expr]) -> Result<Expr, Error> {
     Ok(Expr::string(output.to_string()))
 }
 
+// #todo Add Date-Time add helpers.
+
 // #todo Also implement Duration and (+ Date Duration).
 
 // #todo Consider changing the order of arguments?
@@ -437,8 +439,8 @@ pub fn import_lib_chrono(context: &mut Context) {
         Expr::foreign_func(&chrono_date_from_components),
     );
 
+    // #todo #deprecate Remove one of these aliases.
     module.insert("day-of-week", Expr::foreign_func(&chrono_date_day_of_week));
-    // #todo #deprecate Remove this alias.
     module.insert("weekday-of", Expr::foreign_func(&chrono_date_day_of_week));
 
     // #todo implement with duration and `+`.
