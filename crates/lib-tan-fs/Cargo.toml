@@ -1,0 +1,13 @@
+[package]
+name = "lib-tan-fs"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[lib]
+name = "tanfs"
+crate-type = ["dylib"]
+
+[dependencies]
+tan.workspace = true
