@@ -22,7 +22,7 @@ pub fn text_capitalize(args: &[Expr]) -> Result<Expr, Error> {
 pub fn import_lib_text(context: &mut Context) {
     let module = require_module("text", context);
 
-    module.insert("capitalize", Expr::foreign_func(&text_capitalize));
+    module.insert_invocable("capitalize", Expr::foreign_func(&text_capitalize));
 }
 
 // #insight Tan tests are available at `@std/text/`.

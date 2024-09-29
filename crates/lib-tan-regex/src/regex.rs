@@ -157,16 +157,16 @@ pub fn import_lib_regex(context: &mut Context) {
     // #todo should we introduce a special Regex literal? probably not.
     // #todo maybe a tagged string though, e.g. `"pattern"rx` or `"pattern"r` ?
 
-    module.insert("Regex", Expr::foreign_func(&regex_new));
+    module.insert_invocable("Regex", Expr::foreign_func(&regex_new));
 
     // #todo consider is-matching?, nah, let's make the `?` suffix useful.
-    module.insert("matching?", Expr::foreign_func(&regex_is_matching));
-    module.insert("is-matching?", Expr::foreign_func(&regex_is_matching));
-    module.insert("split$$Regex$$String", Expr::foreign_func(&regex_split));
-    module.insert("split-matches", Expr::foreign_func(&regex_split_matches));
+    module.insert_invocable("matching?", Expr::foreign_func(&regex_is_matching));
+    module.insert_invocable("is-matching?", Expr::foreign_func(&regex_is_matching));
+    module.insert_invocable("split$$Regex$$String", Expr::foreign_func(&regex_split));
+    module.insert_invocable("split-matches", Expr::foreign_func(&regex_split_matches));
 
     //
-    module.insert("capture", Expr::foreign_func(&regex_capture));
+    module.insert_invocable("capture", Expr::foreign_func(&regex_capture));
 }
 
 // #todo move these tests to Tan.

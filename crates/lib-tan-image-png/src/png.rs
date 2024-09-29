@@ -98,6 +98,6 @@ pub fn import_lib_image_png(context: &mut Context) {
     // #todo consider other paths?
     let module = require_module("image/png", context);
 
-    module.insert("Coder", Expr::foreign_func(&png_coder_new));
-    module.insert("write$$Coder$$Buffer", Expr::foreign_func(&png_coder_write));
+    module.insert_invocable("Coder", Expr::foreign_func(&png_coder_new));
+    module.insert_invocable("write$$Coder$$Buffer", Expr::foreign_func(&png_coder_write));
 }

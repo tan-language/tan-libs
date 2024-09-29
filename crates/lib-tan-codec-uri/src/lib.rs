@@ -25,7 +25,7 @@ pub fn install_foreign_dyn_lib(context: &mut Context) {
     // #todo consider other paths?
     let module = require_module("codec/uri", context);
 
-    module.insert(
+    module.insert_invocable(
         "encode-uri-component",
         Expr::foreign_func(&encode_uri_component),
     );

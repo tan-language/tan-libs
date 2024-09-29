@@ -410,53 +410,53 @@ pub fn chrono_date_add_weeks(args: &[Expr]) -> Result<Expr, Error> {
 pub fn import_lib_chrono(context: &mut Context) {
     let module = require_module("chrono", context);
 
-    module.insert("Date-Time", Expr::foreign_func(&chrono_date_time));
+    module.insert_invocable("Date-Time", Expr::foreign_func(&chrono_date_time));
     // #todo consider `to-rfc-399-string` or `format-rfc-399`
-    module.insert(
+    module.insert_invocable(
         "to-rfc-399",
         Expr::foreign_func(&chrono_date_time_to_rfc399),
     );
-    module.insert(
+    module.insert_invocable(
         "to-rfc-399$$Date-Time",
         Expr::foreign_func(&chrono_date_time_to_rfc399),
     );
     // #todo Cannot differentiate from the Date-Time version, maybe put in different module-path?
-    // module.insert(
+    // module.insert_invocable(
     //     "to-rfc-399$$Date",
     //     Expr::foreign_func(&chrono_date_to_rfc399)),
     // );
     // #todo consider (String date-time)
     // #insight #hack this is added in prelude! NASTY hack
-    // module.insert(
+    // module.insert_invocable(
     //     "to-string$$Date-Time",
     //     Expr::foreign_func(&chrono_date_time_to_string)),
     // );
 
-    module.insert("Date", Expr::foreign_func(&chrono_date));
-    module.insert("Date$$Map", Expr::foreign_func(&chrono_date_from_map));
-    module.insert(
+    module.insert_invocable("Date", Expr::foreign_func(&chrono_date));
+    module.insert_invocable("Date$$Map", Expr::foreign_func(&chrono_date_from_map));
+    module.insert_invocable(
         "Date$$Int$$Int$$Int",
         Expr::foreign_func(&chrono_date_from_components),
     );
 
     // #todo #deprecate Remove one of these aliases.
-    module.insert("day-of-week", Expr::foreign_func(&chrono_date_day_of_week));
-    module.insert("weekday-of", Expr::foreign_func(&chrono_date_day_of_week));
+    module.insert_invocable("day-of-week", Expr::foreign_func(&chrono_date_day_of_week));
+    module.insert_invocable("weekday-of", Expr::foreign_func(&chrono_date_day_of_week));
 
     // #todo implement with duration and `+`.
-    module.insert("add-days", Expr::foreign_func(&chrono_date_add_days));
-    module.insert("add-weeks", Expr::foreign_func(&chrono_date_add_weeks));
+    module.insert_invocable("add-days", Expr::foreign_func(&chrono_date_add_days));
+    module.insert_invocable("add-weeks", Expr::foreign_func(&chrono_date_add_weeks));
     // #insight spec comes first for more 'natural' currying.
     // #todo maybe just pass optional parameters to to-string?
     // #todo what would be a better name? stringf, strfmt? format is just too generic to reserve.
     // #todo just make this (String date)?
-    module.insert("format-string", Expr::foreign_func(&chrono_date_format));
-    module.insert(
+    module.insert_invocable("format-string", Expr::foreign_func(&chrono_date_format));
+    module.insert_invocable(
         "format-string$$Date",
         Expr::foreign_func(&chrono_date_format),
     );
     // #todo How to do this?
-    // module.insert(
+    // module.insert_invocable(
     //     "String$$Date",
     //     Expr::foreign_func(&chrono_date_format)),
     // );

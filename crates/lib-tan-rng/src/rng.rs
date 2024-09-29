@@ -95,9 +95,9 @@ pub fn import_lib_rng(context: &mut Context) {
     let module = require_module("rng", context);
 
     // #todo better name?
-    module.insert("random", Expr::foreign_func(&random_int));
+    module.insert_invocable("random", Expr::foreign_func(&random_int));
     // #todo better name?
-    module.insert("random-float", Expr::foreign_func(&random_float));
+    module.insert_invocable("random-float", Expr::foreign_func(&random_float));
 }
 
 // #todo add unit tests.

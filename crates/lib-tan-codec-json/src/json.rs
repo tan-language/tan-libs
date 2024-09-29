@@ -137,9 +137,9 @@ pub fn import_lib_codec_json(context: &mut Context) {
     // #todo find better name.
     // (use codec/json-codec)
     // (let value (json-codec/read json))
-    module.insert("read", Expr::foreign_func(&json_read_string));
+    module.insert_invocable("read", Expr::foreign_func(&json_read_string));
     // #todo find better name
-    module.insert("to-string", Expr::foreign_func(&expr_to_json_string));
+    module.insert_invocable("to-string", Expr::foreign_func(&expr_to_json_string));
 }
 
 // #todo add more unit tests.

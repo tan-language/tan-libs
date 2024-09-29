@@ -180,9 +180,9 @@ pub fn http_post(args: &[Expr]) -> Result<Expr, Error> {
 pub fn import_lib_http_client(context: &mut Context) {
     let module = require_module("network/http/client", context);
     // (get url headers)
-    module.insert("get", Expr::foreign_func(&http_get));
+    module.insert_invocable("get", Expr::foreign_func(&http_get));
     // (post url body headers)
-    module.insert("post", Expr::foreign_func(&http_post));
+    module.insert_invocable("post", Expr::foreign_func(&http_post));
 }
 
 // #todo add a unit test that at least exercises these functions.

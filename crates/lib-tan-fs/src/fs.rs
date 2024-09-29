@@ -590,74 +590,74 @@ pub fn fs_is_directory(args: &[Expr]) -> Result<Expr, Error> {
 pub fn import_lib_fs(context: &mut Context) {
     let module = require_module("fs", context);
 
-    module.insert("open", Expr::foreign_func(&fs_open));
-    module.insert("create", Expr::foreign_func(&fs_create));
+    module.insert_invocable("open", Expr::foreign_func(&fs_open));
+    module.insert_invocable("create", Expr::foreign_func(&fs_create));
 
     // #todo Name this `write`?
     // #todo Introduce `writeln`?
     // #todo should not be required.
-    module.insert("write-string", Expr::foreign_func(&file_write_string));
-    module.insert(
+    module.insert_invocable("write-string", Expr::foreign_func(&file_write_string));
+    module.insert_invocable(
         "write-string$$File$$String",
         Expr::foreign_func(&file_write_string),
     );
     // #todo Should not be required.
-    module.insert("writeln", Expr::foreign_func(&file_writeln));
-    module.insert("writeln$$File$$String", Expr::foreign_func(&file_writeln));
+    module.insert_invocable("writeln", Expr::foreign_func(&file_writeln));
+    module.insert_invocable("writeln$$File$$String", Expr::foreign_func(&file_writeln));
 
-    module.insert(
+    module.insert_invocable(
         "read-file-to-string",
         Expr::foreign_func(&read_file_to_string),
     );
-    module.insert(
+    module.insert_invocable(
         "read-file-to-string$$String",
         Expr::foreign_func(&read_file_to_string),
     );
     // #todo consider just `write`.
     // #todo alternatives: "std:fs:write_string", "std:url:write_string", "str.url.write-string"
-    module.insert(
+    module.insert_invocable(
         "write-string-to-file",
         Expr::foreign_func(&write_string_to_file),
     );
-    module.insert(
+    module.insert_invocable(
         "write-string-to-file$$String",
         Expr::foreign_func(&write_string_to_file),
     );
 
     // #todo find better name.
-    module.insert("list", Expr::foreign_func(&list));
-    module.insert("list$$String", Expr::foreign_func(&list));
+    module.insert_invocable("list", Expr::foreign_func(&list));
+    module.insert_invocable("list$$String", Expr::foreign_func(&list));
 
     // #todo find better name.
     // #todo Investigate how to avoid mut_context.
-    module.insert(
+    module.insert_invocable(
         "list-as-tree",
         Expr::foreign_func_mut_context(&list_as_tree),
     );
-    module.insert(
+    module.insert_invocable(
         "list-as-tree$$String",
         Expr::foreign_func_mut_context(&list_as_tree),
     );
 
-    module.insert("exists?", Expr::foreign_func(&fs_exists));
-    module.insert("exists?$$String", Expr::foreign_func(&fs_exists));
+    module.insert_invocable("exists?", Expr::foreign_func(&fs_exists));
+    module.insert_invocable("exists?$$String", Expr::foreign_func(&fs_exists));
 
-    module.insert("copy", Expr::foreign_func(&fs_copy));
+    module.insert_invocable("copy", Expr::foreign_func(&fs_copy));
 
-    module.insert("copy-directory", Expr::foreign_func(&fs_copy_directory));
+    module.insert_invocable("copy-directory", Expr::foreign_func(&fs_copy_directory));
 
-    module.insert("create-directory", Expr::foreign_func(&create_directory));
+    module.insert_invocable("create-directory", Expr::foreign_func(&create_directory));
 
     // #todo Consider `delete-directory`.
-    module.insert("remove-directory", Expr::foreign_func(&fs_remove_directory));
+    module.insert_invocable("remove-directory", Expr::foreign_func(&fs_remove_directory));
 
     // #todo Move `is-directory?` to Path?
     // #todo Consider `directory?`
-    module.insert("is-directory?", Expr::foreign_func(&fs_is_directory));
+    module.insert_invocable("is-directory?", Expr::foreign_func(&fs_is_directory));
 
-    module.insert("canonicalize", Expr::foreign_func(&fs_canonicalize));
+    module.insert_invocable("canonicalize", Expr::foreign_func(&fs_canonicalize));
 
-    module.insert("rename", Expr::foreign_func(&fs_rename));
+    module.insert_invocable("rename", Expr::foreign_func(&fs_rename));
 }
 
 // #todo add unit tests.

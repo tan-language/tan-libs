@@ -64,7 +64,7 @@ pub fn import_lib_text_cmark(context: &mut Context) {
     // (let html cmark/expr->html expr)
     // (let html cmark/to-html markup)
     // (let html cmark/to-html markup {:unsafe true})
-    module.insert("to-html", Expr::foreign_func(&html_from_common_mark));
+    module.insert_invocable("to-html", Expr::foreign_func(&html_from_common_mark));
 }
 
 #[cfg(test)]

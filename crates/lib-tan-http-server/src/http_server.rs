@@ -335,11 +335,11 @@ pub fn read_form_urlencoded(args: &[Expr]) -> Result<Expr, Error> {
 
 pub fn import_lib_http_server(context: &mut Context) {
     let module = require_module("network/http/server", context);
-    module.insert("serve", Expr::foreign_func_mut_context(&http_serve));
+    module.insert_invocable("serve", Expr::foreign_func_mut_context(&http_serve));
     // #todo move to another namespace.
     // #todo what would be a good name?
     // #insight form-urlencoded is more accurate and actually different than urlencoded.
-    module.insert(
+    module.insert_invocable(
         "read-form-urlencoded",
         Expr::foreign_func(&read_form_urlencoded),
     );

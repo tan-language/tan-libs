@@ -172,7 +172,7 @@ pub fn html_from_expr(args: &[Expr]) -> Result<Expr, Error> {
 pub fn import_lib_html(context: &mut Context) {
     let module = require_module("html", context);
 
-    module.insert("html-from-expr", Expr::foreign_func(&html_from_expr));
+    module.insert_invocable("html-from-expr", Expr::foreign_func(&html_from_expr));
 
     // #insight
     // This is currently an experiment to add additional methods implemented

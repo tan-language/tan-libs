@@ -17,7 +17,7 @@ pub fn import_lib_uuid(context: &mut Context) {
     let module = require_module("uuid", context);
 
     // #todo better name? construct-v4-uuid, or just v4-uuid.
-    module.insert("make-v4-uuid", Expr::foreign_func(&uuid_new_v4));
+    module.insert_invocable("make-v4-uuid", Expr::foreign_func(&uuid_new_v4));
 }
 
 // #todo Add unit-tests (Tan).

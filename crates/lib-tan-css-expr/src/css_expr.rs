@@ -136,7 +136,7 @@ pub fn import_lib_css_expr(context: &mut Context) {
     let module = require_module("dialect/css-expr", context);
 
     // (let css (css-expr/to-css expr))
-    module.insert("to-css", Expr::foreign_func(&css_expr_to_css));
+    module.insert_invocable("to-css", Expr::foreign_func(&css_expr_to_css));
 }
 
 // #todo Convert all tests to Tan tests.
