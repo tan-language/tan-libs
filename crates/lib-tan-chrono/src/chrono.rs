@@ -1,6 +1,6 @@
 use std::{collections::HashMap, sync::Arc};
 
-use chrono::{Datelike, Duration, NaiveDate, NaiveDateTime, Timelike, Utc};
+use chrono::{DateTime, Datelike, Duration, NaiveDate, NaiveDateTime, Timelike, Utc};
 
 use tan::{
     context::Context,
@@ -68,8 +68,18 @@ pub fn chrono_date_time(args: &[Expr]) -> Result<Expr, Error> {
     if args.is_empty() {
         chrono_date_time_now(args)
     } else {
-        todo!();
-        // chrono_date_from_string(args, _context)
+        // #todo Find good name here!
+        let expr = unpack_arg(args, 0, "time")?;
+
+        if let Expr::Int(timestamp) = expr {
+            // #todo Better add explicit function for this, e.g. (Date-Time-from-unix-timestamp ...).
+            let Some(date_time) = DateTime::from_timestamp(*timestamp, 0) else {
+                return Err(Error::invalid_arguments("invalid timestamp", None));
+            };
+            Ok(tan_date_time_from_rust_date_time(date_time.naive_utc()))
+        } else {
+            Err(Error::invalid_arguments("invalid argument", None))
+        }
     }
 }
 
@@ -484,55 +494,56 @@ pub fn import_lib_chrono(context: &mut Context) {
     context.import_scope_into_prelude(prelude_chrono_scope.clone());
 }
 
-#[cfg(test)]
-mod tests {
-    use assert_matches::assert_matches;
+// Converted to tan tests.
+// #[cfg(test)]
+// mod tests {
+//     use assert_matches::assert_matches;
 
-    use tan::{api::eval_string, context::Context, expr::Expr};
+//     use tan::{api::eval_string, context::Context, expr::Expr};
 
-    use super::chrono_date;
+//     use super::chrono_date;
 
-    #[test]
-    fn chrono_date_usage() {
-        let args = [Expr::string("2024-01-17")];
-        let date = chrono_date(&args).unwrap();
-        let map = date.as_map().unwrap();
-        assert_matches!(map.get("year").unwrap(), Expr::Int(year) if *year == 2024);
-        assert_matches!(map.get("month").unwrap(), Expr::Int(month) if *month == 1);
-        assert_matches!(map.get("day").unwrap(), Expr::Int(day) if *day == 17);
-    }
+//     #[test]
+//     fn chrono_date_usage() {
+//         let args = [Expr::string("2024-01-17")];
+//         let date = chrono_date(&args).unwrap();
+//         let map = date.as_map().unwrap();
+//         assert_matches!(map.get("year").unwrap(), Expr::Int(year) if *year == 2024);
+//         assert_matches!(map.get("month").unwrap(), Expr::Int(month) if *month == 1);
+//         assert_matches!(map.get("day").unwrap(), Expr::Int(day) if *day == 17);
+//     }
 
-    #[test]
-    fn chrono_date_add_days_usage() {
-        let mut context = Context::new();
-        let input = r#"
-            (use [Date add-days] chrono)
-            (let d (Date "2024-01-18"))
-            (let d (add-days d 2))
-            (to-string d)
-        "#;
-        let expr = eval_string(input, &mut context).unwrap();
-        assert_matches!(expr, Expr::String(s) if s == "2024-01-20");
+//     #[test]
+//     fn chrono_date_add_days_usage() {
+//         let mut context = Context::new();
+//         let input = r#"
+//             (use [Date add-days] chrono)
+//             (let d (Date "2024-01-18"))
+//             (let d (add-days d 2))
+//             (to-string d)
+//         "#;
+//         let expr = eval_string(input, &mut context).unwrap();
+//         assert_matches!(expr, Expr::String(s) if s == "2024-01-20");
 
-        let input = r#"
-            (use [Date add-days] chrono)
-            (let d (Date "2024-01-18"))
-            (let d (add-days d -20))
-            (to-string d)
-        "#;
-        let expr = eval_string(input, &mut context).unwrap();
-        assert_matches!(expr, Expr::String(s) if s == "2023-12-29");
-    }
+//         let input = r#"
+//             (use [Date add-days] chrono)
+//             (let d (Date "2024-01-18"))
+//             (let d (add-days d -20))
+//             (to-string d)
+//         "#;
+//         let expr = eval_string(input, &mut context).unwrap();
+//         assert_matches!(expr, Expr::String(s) if s == "2023-12-29");
+//     }
 
-    #[test]
-    fn date_format_usage() {
-        let mut context = Context::new();
-        let input = r#"
-            (use [Date format-string] chrono)
-            (let d (Date "2024-01-18"))
-            (format-string "%B %d, %Y" d)
-        "#;
-        let expr = eval_string(input, &mut context).unwrap();
-        assert_matches!(expr, Expr::String(s) if s == "January 18, 2024");
-    }
-}
+//     #[test]
+//     fn date_format_usage() {
+//         let mut context = Context::new();
+//         let input = r#"
+//             (use [Date format-string] chrono)
+//             (let d (Date "2024-01-18"))
+//             (format-string "%B %d, %Y" d)
+//         "#;
+//         let expr = eval_string(input, &mut context).unwrap();
+//         assert_matches!(expr, Expr::String(s) if s == "January 18, 2024");
+//     }
+// }

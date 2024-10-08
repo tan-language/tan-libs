@@ -169,60 +169,59 @@ pub fn import_lib_regex(context: &mut Context) {
     module.insert_invocable("capture", Expr::foreign_func(&regex_capture));
 }
 
-// #todo move these tests to Tan.
+// Converted to tan.
+// #[cfg(test)]
+// mod tests {
+//     use tan::{api::eval_string, context::Context, expr::format_value};
 
-#[cfg(test)]
-mod tests {
-    use tan::{api::eval_string, context::Context, expr::format_value};
+//     #[test]
+//     fn is_matching_usage() {
+//         let mut context = Context::new();
+//         let expr = eval_string(
+//             r#"
+//             (use [Regex matching?] regex)
+//             (let rx (Regex "\\d+"))
+//             (matching? rx "1234")
+//         "#,
+//             &mut context,
+//         )
+//         .unwrap();
+//         assert_eq!(format_value(expr), "true");
 
-    #[test]
-    fn is_matching_usage() {
-        let mut context = Context::new();
-        let expr = eval_string(
-            r#"
-            (use [Regex matching?] regex)
-            (let rx (Regex "\\d+"))
-            (matching? rx "1234")
-        "#,
-            &mut context,
-        )
-        .unwrap();
-        assert_eq!(format_value(expr), "true");
+//         let expr = eval_string(
+//             r#"
+//             (let rx (Regex "\\d+"))
+//             (matching? rx "hello")
+//         "#,
+//             &mut context,
+//         )
+//         .unwrap();
+//         assert_eq!(format_value(expr), "false");
+//     }
 
-        let expr = eval_string(
-            r#"
-            (let rx (Regex "\\d+"))
-            (matching? rx "hello")
-        "#,
-            &mut context,
-        )
-        .unwrap();
-        assert_eq!(format_value(expr), "false");
-    }
+//     #[test]
+//     fn capture_usage() {
+//         let mut context = Context::new();
+//         let expr = eval_string(
+//             r#"
+//             (use [Regex capture] regex)
+//             (let rx (Regex "\\s*(\\d+)\\s*"))
+//             (capture rx " 12,  345 6 7890    11 ")
+//         "#,
+//             &mut context,
+//         )
+//         .unwrap();
+//         assert_eq!(format_value(expr), r#"["12" "345" "6" "7890" "11"]"#);
 
-    #[test]
-    fn capture_usage() {
-        let mut context = Context::new();
-        let expr = eval_string(
-            r#"
-            (use [Regex capture] regex)
-            (let rx (Regex "\\s*(\\d+)\\s*"))
-            (capture rx " 12,  345 6 7890    11 ")
-        "#,
-            &mut context,
-        )
-        .unwrap();
-        assert_eq!(format_value(expr), r#"["12" "345" "6" "7890" "11"]"#);
-
-        let expr = eval_string(
-            r#"
-            (use [Regex capture] regex)
-            (let rx (Regex "class=\"([\w ]*)\""))
-            (capture rx "<div class=\"cool stuff\"><i class=\"nice\">works</i><i class=\"work\">works</i></div>")
-        "#,
-            &mut context,
-        )
-        .unwrap();
-        assert_eq!(format_value(expr), r#"["cool stuff" "nice" "work"]"#);
-    }
-}
+//         let expr = eval_string(
+//             r#"
+//             (use [Regex capture] regex)
+//             (let rx (Regex "class=\"([\w ]*)\""))
+//             (capture rx "<div class=\"cool stuff\"><i class=\"nice\">works</i><i class=\"work\">works</i></div>")
+//         "#,
+//             &mut context,
+//         )
+//         .unwrap();
+//         assert_eq!(format_value(expr), r#"["cool stuff" "nice" "work"]"#);
+//     }
+// }

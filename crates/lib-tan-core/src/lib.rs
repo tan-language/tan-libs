@@ -1,6 +1,41 @@
-// #note #WARNING Not used yet!
+pub mod arithmetic;
+pub mod bool;
+pub mod buffer;
+pub mod char;
+pub mod cmp;
+pub mod dec;
+pub mod eq;
+pub mod error;
+pub mod float;
+pub mod int;
+pub mod io;
+pub mod lang;
+pub mod map;
+pub mod math;
+pub mod maybe;
+pub mod path;
+pub mod prelude;
+pub mod process;
+pub mod range;
+pub mod seq;
+pub mod set;
+pub mod string;
+pub mod testing;
+pub mod u8;
 
-// #todo Move all the code from tan/library.
+use dec::setup_lib_dec;
+
+use tan::context::Context;
+
+use self::{
+    math::setup_lib_math, path::setup_lib_path, prelude::setup_lib_prelude,
+    process::setup_lib_process, set::setup_lib_set,
+};
+
+// #todo consider extracting as a (temporary?) crate, e.g. tan-stdlib-native, tan-native-lib, tan-runtime
+// #todo add unit test for the foreign-functions.
+
+// #todo consider extracting builtins.
 
 // #todo helper function or macro for arithmetic operations!
 // #todo also eval 'if', 'do', 'for' and other keywords here!
@@ -25,7 +60,13 @@
 
 // #todo call the foreign setup from the actual tan module file.
 
-// #todo find a good name for this.
-// pub fn setup_lib(context: &mut Context) {
-//     setup_lib_uuid(context);
-// }
+pub fn setup_lib(context: &mut Context) {
+    setup_lib_process(context);
+    setup_lib_math(context);
+    // setup_lib_testing(context);
+    setup_lib_path(context);
+    setup_lib_set(context);
+    setup_lib_dec(context);
+
+    setup_lib_prelude(context);
+}
