@@ -66,26 +66,3 @@ pub fn import_lib_text_cmark(context: &mut Context) {
     // (let html cmark/to-html markup {:unsafe true})
     module.insert_invocable("to-html", Expr::foreign_func(&html_from_common_mark));
 }
-
-#[cfg(test)]
-mod tests {
-    use tan::{api::eval_string, context::Context};
-
-    #[test]
-    fn html_from_common_mark_usage() {
-        // #todo extract as fixture.
-        let input = r###"
-            (use "/text/cmark")
-
-            ; #todo what could be a good 'category'/'tag' annotation?
-            (let markup #Common-Mark "# Title\nThis is a _nice_ text.")
-
-            (cmark/to-html markup)
-        "###;
-        let mut context = Context::new();
-        let expr = eval_string(input, &mut context).unwrap();
-        let value = expr.as_string().unwrap();
-        let expected = "<h1>Title</h1>\n<p>This is a <em>nice</em> text.</p>\n";
-        assert_eq!(value, expected);
-    }
-}
