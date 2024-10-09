@@ -65,6 +65,8 @@ pub fn path_get_extension(args: &[Expr]) -> Result<Expr, Error> {
 }
 
 pub fn setup_lib_path(context: &mut Context) {
+    // #todo Move under fs/?
+    // #insight not everything is fs-related.
     let module = require_module("path", context);
 
     // #todo think of a better name.

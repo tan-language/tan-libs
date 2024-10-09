@@ -65,6 +65,8 @@ mod tests {
         let expr = eval_string(input, &mut context).unwrap();
         assert_matches!(expr, Expr::U8(n) if n == 12);
 
+        // #todo U8 constructor should return maybe?
+        
         let input = r#"(U8 300)"#;
         let result = eval_string(input, &mut context);
         assert!(result.is_err());

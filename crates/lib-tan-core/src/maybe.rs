@@ -75,13 +75,4 @@ pub fn setup_lib_maybe(context: &mut Context) {
     module.insert_invocable("expect", Expr::foreign_func_mut_context(&expect));
 }
 
-// #todo add unit tests!
-
-// #info test are added to root/@std/maybe/maybe.test.tan
-
-// #[cfg(test)]
-// mod tests {
-
-//     #[test]
-//     fn some_or_usage() {}
-// }
+// #todo add more tan unit tests!
