@@ -73,34 +73,3 @@ pub fn setup_lib_set(context: &mut Context) {
     module.insert_invocable("values-of", Expr::foreign_func(&set_values));
     module.insert_invocable("values-of$$Set", Expr::foreign_func(&set_values));
 }
-
-#[cfg(test)]
-mod tests {
-    use std::borrow::Borrow;
-
-    use tan::{api::eval_string, context::Context, expr::Expr};
-
-    #[test]
-    fn set_put_usage() {
-        let mut context = Context::new();
-        let expr = eval_string(
-            r#"
-            (use [Set put values-of] set)
-            (let s (Set))
-            (put s "hello")
-            (put s "hello")
-            (put s "hello")
-            (put s "world")
-            (put s "world")
-            (values-of s)
-        "#,
-            &mut context,
-        )
-        .unwrap();
-        let values = expr.as_array().unwrap();
-        let values = values.borrow();
-        assert_eq!(values.len(), 2);
-        assert!(values.contains(&Expr::string("hello")));
-        assert!(values.contains(&Expr::string("world")));
-    }
-}

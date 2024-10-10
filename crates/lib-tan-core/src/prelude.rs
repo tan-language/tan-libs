@@ -54,6 +54,7 @@ pub fn setup_lib_prelude(context: &mut Context) {
     setup_lib_maybe(context);
     setup_lib_error(context);
 
+    // #todo I think we can remove this hack after the latest code updates.
     // #todo Move this to lang.rs
     // #todo #temp #hack See how it's done in lib-tan-chrono.
     let module = require_module("prelude", context);
