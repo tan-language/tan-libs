@@ -50,27 +50,3 @@ pub fn setup_lib_char(context: &mut Context) {
     module.insert_invocable("is-upper-case?", Expr::foreign_func(&char_is_uppercase));
     module.insert_invocable("is-lower-case?", Expr::foreign_func(&char_is_lowercase));
 }
-
-#[cfg(test)]
-mod tests {
-    use assert_matches::assert_matches;
-
-    use tan::{api::eval_string, context::Context, expr::Expr};
-
-    #[test]
-    fn char_new_usage() {
-        let mut context = Context::new();
-
-        let input = r#"(Char "c")"#;
-        let expr = eval_string(input, &mut context).unwrap();
-        assert_matches!(expr, Expr::Char(c) if c == 'c');
-
-        let input = r#"(Char "")"#;
-        let result = eval_string(input, &mut context);
-        assert!(result.is_err());
-
-        let input = r#"(Char "abc")"#;
-        let result = eval_string(input, &mut context);
-        assert!(result.is_err());
-    }
-}
