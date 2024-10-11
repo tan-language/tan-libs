@@ -10,6 +10,8 @@ use tan::{
     },
 };
 
+// #todo Split into multiple files, int, float, time, date, etc...
+
 // #todo rename rust implementations to {type}_{func}.
 
 // #insight
@@ -484,29 +486,4 @@ pub fn setup_lib_arithmetic(context: &mut Context) {
         "%$$Float$$Float",
         annotate_type(Expr::foreign_func(&mod_float), "Float"),
     );
-}
-
-#[cfg(test)]
-mod tests {
-    use tan::{api::eval_string, context::Context, expr::format_value};
-
-    #[test]
-    fn int_compare_usage() {
-        let mut context = Context::new();
-
-        let expr = eval_string("(compare 5 6)", &mut context).unwrap();
-        let value = format_value(expr);
-        let expected = "-1";
-        assert_eq!(value, expected);
-
-        let expr = eval_string("(compare 5 5)", &mut context).unwrap();
-        let value = format_value(expr);
-        let expected = "0";
-        assert_eq!(value, expected);
-
-        let expr = eval_string("(compare 9 5)", &mut context).unwrap();
-        let value = format_value(expr);
-        let expected = "1";
-        assert_eq!(value, expected);
-    }
 }

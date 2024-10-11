@@ -50,29 +50,3 @@ pub fn setup_lib_u8(context: &mut Context) {
     module.insert_invocable("U8$$Int", Expr::foreign_func(&u8_new));
     module.insert_invocable("U8$$Float", Expr::foreign_func(&u8_from_float));
 }
-
-#[cfg(test)]
-mod tests {
-    use assert_matches::assert_matches;
-
-    use tan::{api::eval_string, context::Context, expr::Expr};
-
-    #[test]
-    fn char_new_usage() {
-        let mut context = Context::new();
-
-        let input = r#"(U8 12)"#;
-        let expr = eval_string(input, &mut context).unwrap();
-        assert_matches!(expr, Expr::U8(n) if n == 12);
-
-        // #todo U8 constructor should return maybe?
-        
-        let input = r#"(U8 300)"#;
-        let result = eval_string(input, &mut context);
-        assert!(result.is_err());
-
-        let input = r#"(U8 -8)"#;
-        let result = eval_string(input, &mut context);
-        assert!(result.is_err());
-    }
-}

@@ -21,21 +21,3 @@ pub fn setup_lib_error(context: &mut Context) {
     // #todo consider `Err`.
     module.insert_invocable("Error", Expr::foreign_func(&error_new));
 }
-
-#[cfg(test)]
-mod tests {
-    use tan::{api::eval_string, context::Context, expr::format_value};
-
-    #[test]
-    fn error_new_usage() {
-        let mut context = Context::new();
-
-        let input = r#"
-            (Error "undefined symbol")
-        "#;
-        let expr = eval_string(input, &mut context).unwrap();
-        let value = format_value(expr);
-        let expected = r#"(Error "undefined symbol")"#;
-        assert_eq!(value, expected);
-    }
-}

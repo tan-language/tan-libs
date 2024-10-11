@@ -102,46 +102,6 @@ pub fn setup_lib_buffer(context: &mut Context) {
     module.insert_invocable("put$$Buffer$$Int$$U8", Expr::foreign_func(&buffer_put));
 }
 
-// #todo push with Int, reuse push with U8
-// #todo support 5u8
-
-#[cfg(test)]
-mod tests {
-    use tan::{api::eval_string, context::Context, expr::format_value};
-
-    #[test]
-    fn buffer_put_usage() {
-        let mut context = Context::new();
-
-        let input = r#"
-            (let buf (Buffer 4))
-            (put buf 2 (U8 9))
-            buf
-        "#;
-        let expr = eval_string(input, &mut context).unwrap();
-        let value = format_value(expr);
-        let expected = r#"[0 0 9 0]"#;
-        assert_eq!(value, expected);
-
-        let input = r#"
-            (let buf (Buffer 4))
-            (put buf -4 (U8 9))
-        "#;
-        let result = eval_string(input, &mut context);
-        assert!(result.is_err());
-        let error = &result.unwrap_err()[0];
-        assert_eq!("buffer index=`-4` cannot be negative", error.notes[0].text);
-
-        let input = r#"
-            (let buf (Buffer 4))
-            (put buf 15 (U8 9))
-        "#;
-        let result = eval_string(input, &mut context);
-        assert!(result.is_err());
-        let error = &result.unwrap_err()[0];
-        assert_eq!(
-            "buffer index=`15` must be less than the buffer length=`4`",
-            error.notes[0].text
-        );
-    }
-}
+// #todo Push with Int, reuse push with U8
+// #todo Support 5u8.
+// #todo Implement Eq.

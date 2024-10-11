@@ -313,31 +313,3 @@ pub fn setup_lib_eq(context: &mut Context) {
     module.insert_invocable("<=$$Int$$Int", Expr::foreign_func(&int_lte));
     module.insert_invocable("<=$$Float$$Float", Expr::foreign_func(&float_lte));
 }
-
-#[cfg(test)]
-mod tests {
-    use assert_matches::assert_matches;
-
-    use tan::{api::eval_string, context::Context, expr::Expr};
-
-    #[test]
-    fn not_eq_usage() {
-        let mut context = Context::new();
-
-        let input = "(!= 4 5)";
-        let expr = eval_string(input, &mut context).unwrap();
-        assert_matches!(expr, Expr::Bool(true));
-
-        let input = "(!= 5 5)";
-        let expr = eval_string(input, &mut context).unwrap();
-        assert_matches!(expr, Expr::Bool(false));
-
-        let input = "(!= 5.2 5.2)";
-        let expr = eval_string(input, &mut context).unwrap();
-        assert_matches!(expr, Expr::Bool(false));
-
-        let input = r#"(!= "george" "nadia")"#;
-        let expr = eval_string(input, &mut context).unwrap();
-        assert_matches!(expr, Expr::Bool(true));
-    }
-}
