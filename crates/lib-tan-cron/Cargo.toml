@@ -1,0 +1,15 @@
+[package]
+name = "lib-tan-cron"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[lib]
+name = "tancron"
+crate-type = ["dylib"]
+
+[dependencies]
+chrono = { version = "0.4" }
+croner = { version = "2" }
+tan.workspace = true

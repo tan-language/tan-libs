@@ -2,7 +2,7 @@ pushd crates/lib-tan-chrono; ./install.sh; popd
 pushd crates/lib-tan-cmark; ./install.sh; popd
 pushd crates/lib-tan-codec-json; ./install.sh; popd
 pushd crates/lib-tan-codec-uri; ./install.sh; popd
-# pushd crates/lib-tan-core; ./install.sh; popd
+pushd crates/lib-tan-cron; ./install.sh; popd
 pushd crates/lib-tan-css-expr; ./install.sh; popd
 pushd crates/lib-tan-fs; ./install.sh; popd
 pushd crates/lib-tan-http-client; ./install.sh; popd
