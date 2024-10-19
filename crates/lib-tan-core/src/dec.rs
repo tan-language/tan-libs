@@ -11,6 +11,8 @@ use tan::{
     util::{args::unpack_stringable_arg, module_util::require_module},
 };
 
+// #todo Consider removing from core.
+
 // #todo Implement Dec/from-int.
 // #todo Implement Dec/from-float.
 // #todo Implement Dec/from-string.
@@ -27,7 +29,7 @@ pub fn dec_from_string(args: &[Expr]) -> Result<Expr, Error> {
     Ok(Expr::Dec(value))
 }
 
-pub fn setup_lib_dec(context: &mut Context) {
+pub fn import_lib_dec(context: &mut Context) {
     // #todo put in 'dec' path, and import selected functionality to prelude.
     let module = require_module("prelude", context);
 

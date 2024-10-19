@@ -8,6 +8,8 @@ use tan::{
     },
 };
 
+// #todo Consider removing from core.
+
 // #todo consider to associate most functions to the `Path` type.
 // #todo support (path :extension)
 // #todo support (path :full-extension)
@@ -64,7 +66,7 @@ pub fn path_get_extension(args: &[Expr]) -> Result<Expr, Error> {
     Ok(Expr::string(extension))
 }
 
-pub fn setup_lib_path(context: &mut Context) {
+pub fn import_lib_path(context: &mut Context) {
     // #todo Move under fs/?
     // #insight not everything is fs-related.
     let module = require_module("path", context);

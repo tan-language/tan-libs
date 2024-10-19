@@ -20,16 +20,13 @@ pub mod range;
 pub mod seq;
 pub mod set;
 pub mod string;
-pub mod testing;
 pub mod u8;
-
-use dec::setup_lib_dec;
 
 use tan::context::Context;
 
 use self::{
-    math::setup_lib_math, path::setup_lib_path, prelude::setup_lib_prelude,
-    process::setup_lib_process, set::setup_lib_set,
+    dec::import_lib_dec, math::import_lib_math, path::import_lib_path, prelude::import_lib_prelude,
+    process::import_lib_process, set::import_lib_set,
 };
 
 // #todo consider extracting as a (temporary?) crate, e.g. tan-stdlib-native, tan-native-lib, tan-runtime
@@ -60,13 +57,11 @@ use self::{
 
 // #todo call the foreign setup from the actual tan module file.
 
-pub fn setup_lib(context: &mut Context) {
-    setup_lib_process(context);
-    setup_lib_math(context);
-    // setup_lib_testing(context);
-    setup_lib_path(context);
-    setup_lib_set(context);
-    setup_lib_dec(context);
-
-    setup_lib_prelude(context);
+pub fn import_lib(context: &mut Context) {
+    import_lib_process(context);
+    import_lib_math(context);
+    import_lib_path(context);
+    import_lib_set(context);
+    import_lib_dec(context);
+    import_lib_prelude(context);
 }

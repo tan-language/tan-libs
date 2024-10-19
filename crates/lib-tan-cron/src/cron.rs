@@ -10,6 +10,8 @@ use tan::{
     },
 };
 
+// #todo Is cron a POSIX thing, to be organized under posix?
+
 // #todo Extract somewhere.
 // #insight Originally used from /chrono, was causing issues.
 pub fn datetime_from_date(date: NaiveDate) -> DateTime<Utc> {
@@ -45,8 +47,9 @@ pub fn cron_is_matching(args: &[Expr]) -> Result<Expr, Error> {
     let tan_date = unpack_arg(args, 1, "date")?;
     let rust_date = rust_date_from_tan_date(tan_date);
 
-    // #todo proper error reporting here!
-    let Ok(cron) = Cron::new(pattern).parse() else {
+    // #todo Proper error reporting here!
+    // #todo Support options like dom-and-dow, pass as dict.
+    let Ok(cron) = Cron::new(pattern).with_dom_and_dow().parse() else {
         return Err(Error::invalid_arguments(
             &format!("invalid cron pattern: {pattern}"),
             // #todo Add correct range.

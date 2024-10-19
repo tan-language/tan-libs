@@ -4,6 +4,8 @@
 // (let z (Complex 1.0 0.3))
 // (let r (* z z))
 
+// #todo Should definitely stay out of core.
+
 use tan::{
     context::Context,
     error::Error,

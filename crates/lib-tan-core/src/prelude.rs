@@ -33,7 +33,7 @@ pub fn expr_to_string(args: &[Expr]) -> Result<Expr, Error> {
 }
 
 // #todo instead of evaluating in prelude maybe it's better to use the functions from the actual modules?
-pub fn setup_lib_prelude(context: &mut Context) {
+pub fn import_lib_prelude(context: &mut Context) {
     // #todo maybe context.require_module(path) instead?
 
     setup_lib_arithmetic(context);

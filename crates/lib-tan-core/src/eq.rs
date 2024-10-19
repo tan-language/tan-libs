@@ -3,7 +3,9 @@ use tan::{
     error::Error,
     expr::Expr,
     util::{
-        args::{unpack_bool_arg, unpack_float_arg, unpack_int_arg, unpack_stringable_arg},
+        args::{
+            unpack_bool_arg, unpack_float_arg, unpack_int_arg, unpack_stringable_arg, unpack_u8_arg,
+        },
         module_util::require_module,
     },
 };
@@ -39,6 +41,20 @@ pub fn eq_int(args: &[Expr]) -> Result<Expr, Error> {
     // #todo also pass the function name, or at least show the function name upstream.
     let a = unpack_int_arg(args, 0, "a")?;
     let b = unpack_int_arg(args, 1, "b")?;
+
+    Ok(Expr::Bool(a == b))
+}
+
+pub fn eq_u8(args: &[Expr]) -> Result<Expr, Error> {
+    // Use macros to monomorphise functions? or can we leverage Rust's generics? per viariant? maybe with cost generics?
+    // #todo support overloading,
+    // #todo make equality a method of Expr?
+    // #todo support non-Int types
+    // #todo support multiple arguments.
+
+    // #todo also pass the function name, or at least show the function name upstream.
+    let a = unpack_u8_arg(args, 0, "a")?;
+    let b = unpack_u8_arg(args, 1, "b")?;
 
     Ok(Expr::Bool(a == b))
 }
@@ -285,6 +301,7 @@ pub fn setup_lib_eq(context: &mut Context) {
 
     // module.insert_invocable("=", Expr::foreign_func(&eq_int));
     module.insert_invocable("=$$Int$$Int", Expr::foreign_func(&eq_int));
+    module.insert_invocable("=$$U8$$U8", Expr::foreign_func(&eq_u8));
     module.insert_invocable("=$$Bool$$Bool", Expr::foreign_func(&eq_bool));
     module.insert_invocable("=$$Float$$Float", Expr::foreign_func(&eq_float));
     module.insert_invocable("=$$String$$String", Expr::foreign_func(&eq_string));

@@ -241,7 +241,7 @@ pub fn process_shell(args: &[Expr]) -> Result<Expr, Error> {
 // #todo use Rc/Arc consistently
 // #todo some helpers are needed here, to streamline the code.
 
-pub fn setup_lib_process(context: &mut Context) {
+pub fn import_lib_process(context: &mut Context) {
     let module = require_module("process", context);
 
     module.insert_invocable("exit", Expr::foreign_func(&process_exit));

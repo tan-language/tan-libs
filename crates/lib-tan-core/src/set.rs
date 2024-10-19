@@ -57,7 +57,7 @@ pub fn set_values(args: &[Expr]) -> Result<Expr, Error> {
     Ok(Expr::array(values))
 }
 
-pub fn setup_lib_set(context: &mut Context) {
+pub fn import_lib_set(context: &mut Context) {
     // #tod op consider other paths, e.g. data/set, collections/set, collection/set, etc?
     let module = require_module("set", context);
 
