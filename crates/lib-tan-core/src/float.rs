@@ -140,6 +140,12 @@ pub fn float_cos(args: &[Expr]) -> Result<Expr, Error> {
     Ok(Expr::Float(n.cos()))
 }
 
+// #todo Avoid confusion with ...Tan.
+pub fn float_tan(args: &[Expr]) -> Result<Expr, Error> {
+    let n = unpack_float_arg(args, 0, "n")?;
+    Ok(Expr::Float(n.tan()))
+}
+
 // #todo support variable args?
 pub fn float_powi(args: &[Expr]) -> Result<Expr, Error> {
     let [n, e] = args else {
@@ -213,6 +219,7 @@ pub fn setup_lib_float(context: &mut Context) {
 
     module.insert_invocable("sin", Expr::foreign_func(&float_sin));
     module.insert_invocable("cos", Expr::foreign_func(&float_cos));
+    module.insert_invocable("tan", Expr::foreign_func(&float_tan));
     module.insert_invocable("**", Expr::foreign_func(&float_powi));
     module.insert_invocable("**$$Float$$Int", Expr::foreign_func(&float_powi));
 
