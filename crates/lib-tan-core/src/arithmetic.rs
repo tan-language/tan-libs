@@ -247,63 +247,6 @@ pub fn div_float(args: &[Expr]) -> Result<Expr, Error> {
     Ok(Expr::Float(quotient))
 }
 
-pub fn sin_float(args: &[Expr]) -> Result<Expr, Error> {
-    let Some(n) = args.first() else {
-        return Err(Error::invalid_arguments("missing argument", None));
-    };
-
-    let Some(n) = n.as_float() else {
-        return Err(Error::invalid_arguments(
-            "expected Float argument",
-            n.range(),
-        ));
-    };
-
-    Ok(Expr::Float(n.sin()))
-}
-
-pub fn cos_float(args: &[Expr]) -> Result<Expr, Error> {
-    let Some(n) = args.first() else {
-        return Err(Error::invalid_arguments("missing argument", None));
-    };
-
-    let Some(n) = n.as_float() else {
-        return Err(Error::invalid_arguments(
-            "expected Float argument",
-            n.range(),
-        ));
-    };
-
-    Ok(Expr::Float(n.cos()))
-}
-
-// #todo support variable args?
-pub fn powi_float(args: &[Expr]) -> Result<Expr, Error> {
-    let [n, e] = args else {
-        return Err(Error::invalid_arguments(
-            "- requires at least two arguments",
-            None,
-        ));
-    };
-
-    // #todo version of as_float that automatically throws an Error?
-    let Some(n) = n.as_float() else {
-        return Err(Error::invalid_arguments(
-            &format!("{n} is not a Float"),
-            n.range(),
-        ));
-    };
-
-    let Some(e) = e.as_int() else {
-        return Err(Error::invalid_arguments(
-            &format!("{e} is not an Int"),
-            e.range(),
-        ));
-    };
-
-    Ok(Expr::Float(n.powi(e as i32)))
-}
-
 pub fn mod_int(args: &[Expr]) -> Result<Expr, Error> {
     // #todo what are good variable names.
     let x = unpack_int_arg(args, 0, "x")?;
@@ -458,22 +401,6 @@ pub fn setup_lib_arithmetic(context: &mut Context) {
     module.insert_invocable(
         "/$$Float$$Float$$Float",
         annotate_type(Expr::foreign_func(&div_float), "Float"),
-    );
-    module.insert_invocable(
-        "sin",
-        annotate_type(Expr::foreign_func(&sin_float), "Float"),
-    );
-    module.insert_invocable(
-        "cos",
-        annotate_type(Expr::foreign_func(&cos_float), "Float"),
-    );
-    module.insert_invocable(
-        "**",
-        annotate_type(Expr::foreign_func(&powi_float), "Float"),
-    );
-    module.insert_invocable(
-        "**$$Float$$Int",
-        annotate_type(Expr::foreign_func(&powi_float), "Float"),
     );
     // #todo Add support for float exponentiation.
     // #todo shouldn't be required.

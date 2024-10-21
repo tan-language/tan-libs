@@ -9,6 +9,9 @@ use tan::{context::Context, error::Error, expr::Expr, util::module_util::require
 // size -> in bytes (maybe size-in-bytes ?)
 // length/count -> in items/elements (maybe size ?)
 
+// #todo add support for u32, u64 and maybe even other types.
+// #todo add support for little-endian/big-endian.
+
 // #todo use array instead of vec? can we have dynamic array, probably a slice.
 
 // #todo make buffer Iterable/Iterate

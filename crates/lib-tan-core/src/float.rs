@@ -110,6 +110,63 @@ pub fn float_sqrt(args: &[Expr]) -> Result<Expr, Error> {
     Ok(Expr::Float(n.sqrt()))
 }
 
+pub fn float_sin(args: &[Expr]) -> Result<Expr, Error> {
+    let Some(n) = args.first() else {
+        return Err(Error::invalid_arguments("missing argument", None));
+    };
+
+    let Some(n) = n.as_float() else {
+        return Err(Error::invalid_arguments(
+            "expected Float argument",
+            n.range(),
+        ));
+    };
+
+    Ok(Expr::Float(n.sin()))
+}
+
+pub fn float_cos(args: &[Expr]) -> Result<Expr, Error> {
+    let Some(n) = args.first() else {
+        return Err(Error::invalid_arguments("missing argument", None));
+    };
+
+    let Some(n) = n.as_float() else {
+        return Err(Error::invalid_arguments(
+            "expected Float argument",
+            n.range(),
+        ));
+    };
+
+    Ok(Expr::Float(n.cos()))
+}
+
+// #todo support variable args?
+pub fn float_powi(args: &[Expr]) -> Result<Expr, Error> {
+    let [n, e] = args else {
+        return Err(Error::invalid_arguments(
+            "- requires at least two arguments",
+            None,
+        ));
+    };
+
+    // #todo version of as_float that automatically throws an Error?
+    let Some(n) = n.as_float() else {
+        return Err(Error::invalid_arguments(
+            &format!("{n} is not a Float"),
+            n.range(),
+        ));
+    };
+
+    let Some(e) = e.as_int() else {
+        return Err(Error::invalid_arguments(
+            &format!("{e} is not an Int"),
+            e.range(),
+        ));
+    };
+
+    Ok(Expr::Float(n.powi(e as i32)))
+}
+
 // #todo Introduce clamp
 // #todo Also introduce clamp in Range and/or Interval.
 
@@ -153,6 +210,11 @@ pub fn setup_lib_float(context: &mut Context) {
     // #todo Note that `sqrt` does not follow Tan naming conventions but it's a standard term.
     module.insert_invocable("sqrt", Expr::foreign_func(&float_sqrt));
     module.insert_invocable("sqrt$$Float", Expr::foreign_func(&float_sqrt));
+
+    module.insert_invocable("sin", Expr::foreign_func(&float_sin));
+    module.insert_invocable("cos", Expr::foreign_func(&float_cos));
+    module.insert_invocable("**", Expr::foreign_func(&float_powi));
+    module.insert_invocable("**$$Float$$Int", Expr::foreign_func(&float_powi));
 
     // Constants.
 
