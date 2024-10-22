@@ -4,7 +4,7 @@ use tan::{
     eval::{invoke, invoke_func},
     expr::{expr_clone, format_value, Expr},
     util::{
-        args::{unpack_arg, unpack_array_arg, unpack_int_arg},
+        args::{unpack_arg, unpack_array_arg, unpack_array_mut_arg, unpack_int_arg},
         module_util::require_module,
     },
 };
@@ -96,6 +96,19 @@ pub fn array_push(args: &[Expr]) -> Result<Expr, Error> {
     elements.push(element.unpack().clone()); // #todo hmm this clone!
 
     // #todo what to return?
+    Ok(Expr::None)
+}
+
+// (put arr index value)
+pub fn array_put(args: &[Expr]) -> Result<Expr, Error> {
+    let mut array = unpack_array_mut_arg(args, 0, "array")?;
+    let index = unpack_int_arg(args, 1, "index")?;
+    let element = unpack_arg(args, 2, "element")?;
+
+    // #todo Remove this clone.
+    array.insert(index as usize, element.clone());
+
+    // #todo What should we return?
     Ok(Expr::None)
 }
 
@@ -488,6 +501,9 @@ pub fn setup_lib_seq(context: &mut Context) {
 
     // #todo add type qualifiers!
     module.insert_invocable("push", Expr::foreign_func(&array_push));
+    // #todo Add more signatures, or make generic somehow.
+    module.insert_invocable("put$$Array$$Int$$Int", Expr::foreign_func(&array_put));
+    module.insert_invocable("put$$Array$$Int$$Float", Expr::foreign_func(&array_put));
     // #todo Reconsider the `!` suffix, reconsider the name.
     // #todo Consider concat-mut
     // #todo also introduce `++`, `++=`, versions
