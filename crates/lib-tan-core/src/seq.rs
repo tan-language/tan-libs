@@ -99,6 +99,7 @@ pub fn array_push(args: &[Expr]) -> Result<Expr, Error> {
     Ok(Expr::None)
 }
 
+// #todo Add unit-test.
 // (put arr index value)
 pub fn array_put(args: &[Expr]) -> Result<Expr, Error> {
     let mut array = unpack_array_mut_arg(args, 0, "array")?;
@@ -106,7 +107,7 @@ pub fn array_put(args: &[Expr]) -> Result<Expr, Error> {
     let element = unpack_arg(args, 2, "element")?;
 
     // #todo Remove this clone.
-    array.insert(index as usize, element.clone());
+    array[index as usize] = element.clone();
 
     // #todo What should we return?
     Ok(Expr::None)
@@ -276,9 +277,9 @@ pub fn array_contains(args: &[Expr]) -> Result<Expr, Error> {
 
 // #todo add unit tests.
 pub fn array_map(args: &[Expr], context: &mut Context) -> Result<Expr, Error> {
-    let [func, seq] = args else {
+    let [seq, func] = args else {
         return Err(Error::invalid_arguments(
-            "requires `func` and `seq` arguments",
+            "requires `array` and `func` arguments",
             None,
         ));
     };

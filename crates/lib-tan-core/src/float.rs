@@ -10,6 +10,9 @@ use tan::{
     },
 };
 
+// #todo Don't include functions like floor/ceil/round in prelude.
+// #todo Consider the names floor-of, ceil-of, round-of.
+
 // #todo Implement with Tan.
 pub fn float_from_int(args: &[Expr]) -> Result<Expr, Error> {
     let [value] = args else {
@@ -103,6 +106,14 @@ pub fn float_floor(args: &[Expr]) -> Result<Expr, Error> {
 pub fn float_ceil(args: &[Expr]) -> Result<Expr, Error> {
     let n = unpack_float_arg(args, 0, "n")?;
     Ok(Expr::Float(n.ceil()))
+}
+
+// #todo Support multiple rounding modes.
+// #todo What would be a non-ambiguous number?
+pub fn float_round(args: &[Expr]) -> Result<Expr, Error> {
+    let n = unpack_float_arg(args, 0, "n")?;
+    // #todo Consider round_ties_even.
+    Ok(Expr::Float(n.round()))
 }
 
 pub fn float_sqrt(args: &[Expr]) -> Result<Expr, Error> {
@@ -207,10 +218,9 @@ pub fn setup_lib_float(context: &mut Context) {
 
     // #todo Kind of annoying that these are non-verbs.
 
-    module.insert_invocable("floor", Expr::foreign_func(&float_floor));
     module.insert_invocable("floor$$Float", Expr::foreign_func(&float_floor));
-    module.insert_invocable("ceil", Expr::foreign_func(&float_ceil));
     module.insert_invocable("ceil$$Float", Expr::foreign_func(&float_ceil));
+    module.insert_invocable("round$$Float", Expr::foreign_func(&float_round));
 
     // #todo Consider sqrt-of or Num/sqrt or math/sqrt.
     // #todo Note that `sqrt` does not follow Tan naming conventions but it's a standard term.
