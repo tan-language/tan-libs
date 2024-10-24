@@ -3,4 +3,5 @@
 ## Todo
 
 - Add Duration
-- Add Clock
+- Add Clock, what is a clock?
+- Add System-Time?
