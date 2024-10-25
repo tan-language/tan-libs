@@ -10,6 +10,10 @@ use tan::{
 
 // #todo implement all these with Tan.
 
+// pub fn maybe_new() -> Result<Expr, Error> {
+//     unimplemented!()
+// }
+
 // #todo rename to nil?/is-nil?
 // #insight with dynamic typing you don't strictly need a Maybe type?
 pub fn is_none(args: &[Expr]) -> Result<Expr, Error> {

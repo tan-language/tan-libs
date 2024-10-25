@@ -6,7 +6,8 @@
 // #insight #ai
 // Use Duration when you need to work with a length of time in a general sense.
 // Use Interval when you need to represent a specific time span with defined
-// start and end points. An interval is like a range?
+// start and end points. An interval is like a range? This use of Interval comes
+// from joda-time but I am not sure it's correct.
 
 // #todo
 // Have predefined durations:
