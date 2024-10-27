@@ -2,7 +2,10 @@ use tan::{
     context::Context,
     error::Error,
     expr::{format_value, Expr},
-    util::{args::unpack_stringable_arg, module_util::require_module},
+    util::{
+        args::{unpack_int_arg, unpack_stringable_arg},
+        module_util::require_module,
+    },
 };
 
 // #todo string push/append/concat, make similar to array: push one char, append/concat another string, ++ handles both.
@@ -499,6 +502,32 @@ pub fn string_compare(args: &[Expr]) -> Result<Expr, Error> {
     Ok(Expr::Int(ordering))
 }
 
+// #todo Add repeat, justl, justr.
+
+// #todo #decision Using pad works better with pad character.
+// #insight The name is inspired from Python, an alternative could be `padr``.
+// Justify Left.
+pub fn string_justl(args: &[Expr]) -> Result<Expr, Error> {
+    // #insight The s arg comes first to work better with the optional parameter.
+    let s = unpack_stringable_arg(args, 0, "str")?;
+    let width = unpack_int_arg(args, 1, "width")? as usize;
+    let pad_char = if args.len() > 2 {
+        unpack_stringable_arg(args, 2, "pad-char")?
+    } else {
+        " "
+    };
+
+    let length = s.chars().count();
+
+    let just_s = if length >= width {
+        s.to_string()
+    } else {
+        format!("{}{}", s, pad_char.repeat(width - length))
+    };
+
+    Ok(Expr::String(just_s))
+}
+
 pub fn setup_lib_string(context: &mut Context) {
     let module = require_module("prelude", context);
 
@@ -573,4 +602,10 @@ pub fn setup_lib_string(context: &mut Context) {
      */
     // #todo: consider 'ends-with' without '?'.
     module.insert_invocable("ends-with?", Expr::foreign_func(&string_ends_with));
+
+    // Non-prelude string methods go to the /str namespace.
+
+    let module = require_module("str", context);
+    // #todo Consider other names, e.g. padr.
+    module.insert_invocable("justl", Expr::foreign_func(&string_justl));
 }

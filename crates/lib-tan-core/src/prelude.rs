@@ -3,6 +3,8 @@ use tan::error::Error;
 use tan::expr::Expr;
 use tan::util::module_util::require_module;
 
+use crate::array::import_lib_array;
+
 use super::arithmetic::setup_lib_arithmetic;
 use super::bool::setup_lib_bool;
 use super::buffer::setup_lib_buffer;
@@ -43,6 +45,7 @@ pub fn import_lib_prelude(context: &mut Context) {
     setup_lib_io(context);
     setup_lib_string(context);
     setup_lib_seq(context);
+    import_lib_array(context);
     setup_lib_map(context);
     setup_lib_lang(context);
     setup_lib_range(context);
